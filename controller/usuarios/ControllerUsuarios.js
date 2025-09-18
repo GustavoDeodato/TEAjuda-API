@@ -4,38 +4,68 @@
  * Autor: Gustavo Deodato
  * Versão 1.0
  * ********************************************** */
-const message = require('../../modulo/config.js'
+const message = require('../../modulo/config.js')
 
-)
 const usuariosDAO = require('../../model/DAO/usuario.js')
 
-const inserirUsuario = async function(usuario, contentType){
+const inserirUsuario = async function(contentType, usuario){
     try {
         if(String(contentType).toLowerCase == 'aplication/json'){
             if(usuario.nome == ''|| usuario.nome == null || usuario.nome == undefined || usuario.nome.length > 100
                 || usuario.senha == '' || usuario.senha == null || usuario.senha == undefined|| usuario.senha.length > 100 ||
                 usuario.email == '' || usuario.email == null || usuario.email == undefined || usuario.email.length > 100 ||
-                usuario.nome_tutelado == '' || usuario.nome_tutelado == undefined || usuario.nome_tutelado == null || usuario.nome_tutelado.length
+                usuario.nome_tutelado == '' || usuario.nome_tutelado == undefined || usuario.nome_tutelado == null || usuario.nome_tutelado.length > 100
             ){
-                return message.ERROR_REQUIRED_FIELDS
+                return message.ERROR_REQUIRED_FIELDS//400
             }else{
                 let resultusuario = await usuariosDAO.insertUsuario(usuario)
+                console.log(resultusuario)
 
                 if(resultusuario)
                     return message.SUCESS_CREATED_ITEM//201
                 else return message.ERROR_INTERNAL_SERVER_MODEL//500
+                
             }
         }else{
-            return message.ERROR_CONTENT_TYPE
+            return message.ERROR_CONTENT_TYPE//415
         }
     } catch (error) {
-        return message.ERROR_INTERNAL_SERVER_CONTROLLER
+        return message.ERROR_INTERNAL_SERVER_CONTROLLER//500
     }
 }
 
-const atualizarUsuario = async function(){
+const atualizarUsuario = async function(contentType, usuario, id){
     try {
-        
+        if (String(contentType).toLowerCase() == 'application/json') {
+
+            if (usuario.nome == '' || usuario.nome == null || usuario.nome == undefined || usuario.nome.length > 100 ||
+                usuario.email == ''|| usuario.email == null|| usuario.email == undefined|| usuario.email.length > 8  ||
+                id            == ''|| id == undefined      || id == null                || isNaN(id)
+            ) {
+                return message.ERROR_REQUIRED_FIELDS//status code 400
+            } else {
+                //verifica se o ID existe no BD
+                let result = await usuariosDAO.selectByIdUsuarios(id)
+
+                if (result != false || typeof (result) == 'object') {
+                    if (result.length > 0) {
+                        //Update
+                        //Adiciona o atributo do ID no JSON com os dados recebidos no corpo da requisição
+                        usuario.id = id
+                        let resultUsuario = await usuariosDAO.selectByIdUsuarios(id)
+                        if (resultUsuario) {
+                            return message.SUCESS_CREATED_ITEM
+                        } else {
+                            return message.ERROR_INTERNAL_SERVER_MODEL //500
+                        }
+                    } else {
+                        return message.ERROR_NOT_FOUND
+                    }
+                }
+            }
+        } else {
+            return message.ERROR_CONTENT_TYPE //415
+        }
     } catch (error) {
         
     }
@@ -119,4 +149,12 @@ const excluirUsuario = async function(id){
         return message.ERROR_INTERNAL_SERVER_CONTROLLER
         
     }
+}
+
+module.exports = {
+    inserirUsuario,
+    atualizarUsuario,
+    excluirUsuario,
+    buscarUsuario,
+    listarUsuario
 }
