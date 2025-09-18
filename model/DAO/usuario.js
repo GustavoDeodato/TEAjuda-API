@@ -7,6 +7,8 @@
 
 const {PrismaClient} = require('@prisma/client')
 
+const prisma = new PrismaClient()
+
 const insertUsuario = async function(usuario){
     try {
         let sql = `insert into tbl_usuario (nome, email, senha, nome_tutelado)
@@ -27,13 +29,30 @@ const insertUsuario = async function(usuario){
     }
 }
 
+
 const updateUsuarios = async function (id) {
-    
+    try {
+         let sql = `update tbl_usuario set nome = '${usuario.nome}',
+         email = ${usuario.email},
+         nomeTutelado = ${usuario.nome_tutelado},
+         where id = ${usuario.id} `
+
+         let result = await prisma.$executeRawUnsafe(sql)
+
+         if (result)
+            return true
+        else
+            return false
+    } catch (error) {
+       return  false 
+        
+
+    }
 }
 
 const selectAllUsuarios = async function () {
     try {
-        sql = `select * from tbl_usuario order by id desc`
+        let sql = `select * from tbl_usuario order by id desc`
 
         let result = await prisma.$queryRawUnsafe(sql)
 

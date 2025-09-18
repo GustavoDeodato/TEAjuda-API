@@ -31,7 +31,11 @@
 const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
+const dotenv = require('dotenv')
+const authRoutes = require('./routes/authRoutes')
 
+const controllerUsuarios = require ('./controller/usuarios/ControllerUsuarios.js')
+dotenv.config()
 
 //Cria um objeto para o body do tipo json 
 const bodyParserJSON = bodyParser.json()
@@ -51,4 +55,86 @@ app.use((request, response, next)=>{
     app.use(cors())
 
     next()
+})
+
+app.use('/api/auth', authRoutes)
+
+app.post('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function (request, response) {
+    //Recebe o content-type da requisição 
+    let contentType = request.headers['content-type']
+    //Recebe os dados da requisição 
+    let dadosBody = request.body
+
+    //Chama função da controller para inserir os dados e aguarda o retorno da função 
+    let resultUsuario = await controllerUsuarios.inserirUsuario(dadosBody, contentType)
+    response.status(resultUsuario.status_code)
+    response.json(resultUsuario)
+
+})
+app.get ('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function (request, response){
+    let id = request.params.id
+    let contentType = request.headers ['content-type']
+
+    let dadosBody = request.body
+
+    let resultUsuario = await controllerUsuarios.listarUsuario(dadosBody, contentType)
+    response.status (resultUsuario.status_code)
+    response.json(resultUsuario)
+
+} )
+app.get ('/v1/controle-usuario/usuario:id', cors(), bodyParserJSON, async function (request, response){
+    let id = request.params.id
+    let contentType = request.headers ['content-type']
+
+    let dadosBody = request.body
+
+    let resultUsuario = await controllerUsuarios.buscarUsuario(id)
+    response.status (resultUsuario.status_code)
+    response.json(resultUsuario)
+
+} )
+
+app.put('/v1/controle-usuarios/usuario/:id', cors(), bodyParserJSON, async function (request, response) {
+
+
+    //Recebe o id da musica
+    let idUsuario = request.params.id
+
+
+    //receber os dados da requisiçao 
+    let dadosBody = request.body
+
+    //Recebe o content type 
+    let contentType = request.headers['content-type']
+
+
+
+
+
+    let resultUsuario = await controllerUsuario.atualizarUsuario(idUsuario, dadosBody, contentType)
+
+    response.status(resultUsuario.status_code)
+    response.json(resultUsuario)
+})
+app.post('/v1/controle-artistas/artista', cors(), bodyParserJSON, async function (request, response) {
+    //Recebe o content-type da requisição 
+    let contentType = request.headers['content-type']
+    //Recebe os dados da requisição 
+    let dadosBody = request.body
+
+    //Chama função da controller para inserir os dados e aguarda o retorno da função 
+    let resultArtista = await controllerArtista.inserirArtista(dadosBody, contentType)
+    response.status(resultArtista.status_code);
+    response.json(resultArtista);
+
+})
+
+// // Defina a porta e inicie o servidor
+// const PORT = process.env.PORT || 3000
+// app.listen(PORT, () => {
+//     console.log(`Servidor rodando na porta ${PORT}`)
+// })
+
+app.listen(8080, function () {
+    console.log('API aguardando requisições...')
 })
