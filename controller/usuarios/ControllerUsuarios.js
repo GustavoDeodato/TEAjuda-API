@@ -10,7 +10,7 @@ const usuariosDAO = require('../../model/DAO/usuario.js')
 
 const inserirUsuario = async function(contentType, usuario){
     try {
-        if(String(contentType).toLowerCase == 'aplication/json'){
+        if(String(contentType).toLowerCase() == 'application/json'){
             if(usuario.nome == ''|| usuario.nome == null || usuario.nome == undefined || usuario.nome.length > 100
                 || usuario.senha == '' || usuario.senha == null || usuario.senha == undefined|| usuario.senha.length > 100 ||
                 usuario.email == '' || usuario.email == null || usuario.email == undefined || usuario.email.length > 100 ||
@@ -19,7 +19,6 @@ const inserirUsuario = async function(contentType, usuario){
                 return message.ERROR_REQUIRED_FIELDS//400
             }else{
                 let resultusuario = await usuariosDAO.insertUsuario(usuario)
-                console.log(resultusuario)
 
                 if(resultusuario)
                     return message.SUCESS_CREATED_ITEM//201
@@ -45,14 +44,14 @@ const atualizarUsuario = async function(contentType, usuario, id){
                 return message.ERROR_REQUIRED_FIELDS//status code 400
             } else {
                 //verifica se o ID existe no BD
-                let result = await usuariosDAO.selectByIdUsuarios(id)
+                let result = await usuariosDAO.selectByIdUsuario(id)
 
                 if (result != false || typeof (result) == 'object') {
                     if (result.length > 0) {
                         //Update
                         //Adiciona o atributo do ID no JSON com os dados recebidos no corpo da requisição
                         usuario.id = id
-                        let resultUsuario = await usuariosDAO.selectByIdUsuarios(id)
+                        let resultUsuario = await usuariosDAO.updateUsuario(id)
                         if (resultUsuario) {
                             return message.SUCESS_CREATED_ITEM
                         } else {
@@ -75,7 +74,7 @@ const listarUsuario = async function(){
     try {
         let dadosUsuarios = {}
 
-        let resultUsuarios = await usuariosDAO.selectAllUsuarios()
+        let resultUsuarios = await usuariosDAO.selectAllUsuario()
 
         if(resultUsuarios != false || typeof(resultUsuarios) == 'object'){
             if(resultUsuarios.length > 0){
@@ -103,7 +102,7 @@ const buscarUsuario = async function(id){
         }else{
             dadosusuario = {}
 
-            let resultusuario = usuariosDAO.selectByIdUsuarios(id)
+            let resultusuario = usuariosDAO.selectByIdUsuario(id)
             if(resultusuario != false || typeof(resultusuario) == 'object'){
                 if(resultusuario.length > 0 ){
                 //criacao do json para o array das usuarios 
@@ -128,11 +127,11 @@ const excluirUsuario = async function(id){
         if(id == null || id == undefined || id == '' || isNaN(id)){
             return message.ERROR_REQUIRED_FIELDS
         }else{
-            let resultusuario = await usuariosDAO.selectByIdUsuarios(id)
+            let resultusuario = await usuariosDAO.selectByIdUsuario(id)
             if(resultusuario != false || typeof(resultusuario) == 'object'){
                 if(resultusuario.length > 0){
 
-                    result = await usuariosDAO.deleteUsuarios(id)
+                    result = await usuariosDAO.deleteUsuario(id)
 
                     if(result)
                         return message.SUCESS_DELETE_ITEM

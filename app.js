@@ -34,7 +34,6 @@ const bodyParser = require('body-parser')
 const dotenv = require('dotenv')
 const authRoutes = require('./routes/authRoutes')
 
-const controllerUsuarios = require ('./controller/usuarios/ControllerUsuarios.js')
 dotenv.config()
 
 //Cria um objeto para o body do tipo json 
@@ -59,19 +58,36 @@ app.use((request, response, next)=>{
 
 app.use('/api/auth', authRoutes)
 
-app.post('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function (request, response) {
-    //Recebe o content-type da requisição 
-    let contentType = request.headers['content-type']
-    //Recebe os dados da requisição 
-    let dadosBody = request.body
+const controllerUsuarios = require ('./controller/usuarios/ControllerUsuarios.js')
 
-    //Chama função da controller para inserir os dados e aguarda o retorno da função 
-    let resultUsuario = await controllerUsuarios.inserirUsuario(dadosBody, contentType)
+
+// app.post('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function (request, response) {
+//     //Recebe o content-type da requisição 
+//     let contentType = request.headers['content-type']
+//     //Recebe os dados da requisição 
+//     let dadosBody = request.body
+
+//     //Chama função da controller para inserir os dados e aguarda o retorno da função 
+//     let resultUsuario = await controllerUsuarios.inserirUsuario(contentType, dadosBody)
+//     response.status(resultUsuario.status_code)
+//     response.json(resultUsuario)
+
+// })
+//Endpoint para inserir uma musica 
+app.post('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function(request, response){
+
+    let contentType = request.headers['content-type']
+
+    //recebe os dados do body da requisição 
+    let dadosbody = request.body
+   
+    //chama a função da controller para inserir os dados e agurada o retorno da função 
+    let resultUsuario = await controllerUsuarios.inserirUsuario(contentType, dadosbody)
+ 
     response.status(resultUsuario.status_code)
     response.json(resultUsuario)
-
 })
-app.get ('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function (request, response){
+app.get ('/v1/controle-usuario/', cors(), bodyParserJSON, async function (request, response){
     let id = request.params.id
     let contentType = request.headers ['content-type']
 
@@ -116,7 +132,7 @@ app.put('/v1/controle-usuarios/usuario/:id', cors(), bodyParserJSON, async funct
     response.status(resultUsuario.status_code)
     response.json(resultUsuario)
 })
-app.post('/v1/controle-artistas/artista', cors(), bodyParserJSON, async function (request, response) {
+app.post('/v1/controle-arusuariotistas/artista', cors(), bodyParserJSON, async function (request, response) {
     //Recebe o content-type da requisição 
     let contentType = request.headers['content-type']
     //Recebe os dados da requisição 
