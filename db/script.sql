@@ -22,3 +22,6 @@ show tables;
 
 select * from tbl_usuario order by id desc;
 
+ALTER TABLE tbl_usuario
+DROP COLUMN nome_tutelado;
+

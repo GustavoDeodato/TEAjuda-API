@@ -13,8 +13,7 @@ const inserirUsuario = async function(contentType, usuario){
         if(String(contentType).toLowerCase() == 'application/json'){
             if(usuario.nome == ''|| usuario.nome == null || usuario.nome == undefined || usuario.nome.length > 100
                 || usuario.senha == '' || usuario.senha == null || usuario.senha == undefined|| usuario.senha.length > 100 ||
-                usuario.email == '' || usuario.email == null || usuario.email == undefined || usuario.email.length > 100 ||
-                usuario.nome_tutelado == '' || usuario.nome_tutelado == undefined || usuario.nome_tutelado == null || usuario.nome_tutelado.length > 100
+                usuario.email == '' || usuario.email == null || usuario.email == undefined || usuario.email.length > 100 
             ){
                 return message.ERROR_REQUIRED_FIELDS//400
             }else{
