@@ -97,12 +97,12 @@ const listarUsuario = async function(){
 
 const buscarUsuario = async function(id){
     try {
-        if(id == null || id == undefined || id == '' || isNaN(id)){
+        if(id == '' || id == undefined || id == null || isNaN(id)){
             return message.ERROR_REQUIRED_FIELDS //400
         }else{
             dadosusuario = {}
 
-            let resultusuario = usuariosDAO.selectByIdUsuario(id)
+            let resultusuario =  await usuariosDAO.selectByIdUsuario(id)
             if(resultusuario != false || typeof(resultusuario) == 'object'){
                 if(resultusuario.length > 0 ){
                 //criacao do json para o array das usuarios 
@@ -118,7 +118,7 @@ const buscarUsuario = async function(id){
             }
         }
     } catch (error) {
-        
+        return message.ERROR_INTERNAL_SERVER_CONTROLLER
     }
 }
 
