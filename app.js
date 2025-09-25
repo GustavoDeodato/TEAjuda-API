@@ -62,19 +62,6 @@ app.use((request, response, next)=>{
 app.use('/api/auth', authRoutes)
 
 
-
-// app.post('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function (request, response) {
-//     //Recebe o content-type da requisição 
-//     let contentType = request.headers['content-type']
-//     //Recebe os dados da requisição 
-//     let dadosBody = request.body
-
-//     //Chama função da controller para inserir os dados e aguarda o retorno da função 
-//     let resultUsuario = await controllerUsuarios.inserirUsuario(contentType, dadosBody)
-//     response.status(resultUsuario.status_code)
-//     response.json(resultUsuario)
-
-// })
 //Endpoint para inserir uma musica 
 app.post('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function(request, response){
 

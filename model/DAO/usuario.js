@@ -14,28 +14,22 @@ const prisma = new PrismaClient
 //Função para inserir novas usuarios
 const insertUsuario = async function (usuario){
     try {
-        let sql = `insert into tbl_usuario (nome, email, senha)
+        const result = await prisma.$executeRawUnsafe(
+            `CALL InserirUsuario('${usuario.nome}', '${usuario.email}', '${usuario.senha}')`
+        );
+        console.log(result)
+
         
-        values('${usuario.nome}',
-                '${usuario.email}',
-                '${usuario.senha}'
-                )`
-
-console.log(sql)
-    //Executa o script sql no banco de dados e aguarda o resultado (retornando true ou false)
-    let result = await prisma.$executeRawUnsafe(sql)
-
-    if(result)
-        return true 
-    else 
-    return false 
+     if(result)
+         return true 
+        else 
+         return false 
 
     } catch (error) {
+        console.log("Erro ao chamar producere", error)
         return false 
     }
 }
-
-
 
 //Função para atualizar uma usuario existente 
 const updateUsuario = async function (usuario){
