@@ -14,18 +14,16 @@ const prisma = new PrismaClient
 //Função para inserir novas usuarios
 const insertUsuario = async function (usuario){
     try {
-        let sql = `insert into tbl_usuario (nome, email, senha, nome_tutelado)
+        let sql = `insert into tbl_usuario (nome, email, senha)
         
         values('${usuario.nome}',
                 '${usuario.email}',
-                '${usuario.senha}',
-                '${usuario.nome_tutelado}')`
+                '${usuario.senha}'
+                )`
 
 console.log(sql)
     //Executa o script sql no banco de dados e aguarda o resultado (retornando true ou false)
     let result = await prisma.$executeRawUnsafe(sql)
-
-    
 
     if(result)
         return true 
@@ -44,8 +42,7 @@ const updateUsuario = async function (usuario){
     try {
         let sql = `update tbl_usuario set nome = '${usuario.nome}',
                     email = '${usuario.email}',
-                    senha = '${usuario.senha}',
-                    nome_tutelado = '${usuario.nome_tutelado}'
+                    senha = '${usuario.senha}'
         where id = '${usuario.id}'`
 
         let result = await prisma.$executeRawUnsafe(sql)

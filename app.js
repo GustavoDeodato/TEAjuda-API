@@ -42,6 +42,9 @@ const bodyParserJSON = bodyParser.json()
 //incializando a utilização do express através da variavel app
 const app = express()
 
+const controllerUsuarios = require ('./controller/usuarios/ControllerUsuarios')
+
+
 // request = significa a chegada de dados na api 
 // response = saida de dados na api 
 // next = 
@@ -58,7 +61,6 @@ app.use((request, response, next)=>{
 
 app.use('/api/auth', authRoutes)
 
-const controllerUsuarios = require ('./controller/usuarios/ControllerUsuarios.js')
 
 
 // app.post('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function (request, response) {
@@ -121,10 +123,7 @@ app.put('/v1/controle-usuarios/usuario/:id', cors(), bodyParserJSON, async funct
     let contentType = request.headers['content-type']
 
 
-
-
-
-    let resultUsuario = await controllerUsuario.atualizarUsuario(idUsuario, dadosBody, contentType)
+    let resultUsuario = await controllerUsuarios.atualizarUsuario(idUsuario, dadosBody, contentType)
 
     response.status(resultUsuario.status_code)
     response.json(resultUsuario)
