@@ -98,10 +98,9 @@ app.get ('/v1/controle-usuario/', cors(), bodyParserJSON, async function (reques
     response.json(resultUsuario)
 
 } )
-app.get ('/v1/controle-usuario/usuario:id', cors(), bodyParserJSON, async function (request, response){
+app.get ('/v1/controle-usuario/usuario/:id', cors(), bodyParserJSON, async function (request, response){
     let id = request.params.id
     let contentType = request.headers ['content-type']
-
     let dadosBody = request.body
 
     let resultUsuario = await controllerUsuarios.buscarUsuario(id)
@@ -112,10 +111,8 @@ app.get ('/v1/controle-usuario/usuario:id', cors(), bodyParserJSON, async functi
 
 app.put('/v1/controle-usuarios/usuario/:id', cors(), bodyParserJSON, async function (request, response) {
 
-
     //Recebe o id da musica
     let idUsuario = request.params.id
-
 
     //receber os dados da requisiçao 
     let dadosBody = request.body
