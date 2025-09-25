@@ -87,7 +87,7 @@ app.post('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function(
     response.status(resultUsuario.status_code)
     response.json(resultUsuario)
 })
-app.get ('/v1/controle-usuario/', cors(), bodyParserJSON, async function (request, response){
+app.get ('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function (request, response){
     let id = request.params.id
     let contentType = request.headers ['content-type']
 
@@ -98,7 +98,7 @@ app.get ('/v1/controle-usuario/', cors(), bodyParserJSON, async function (reques
     response.json(resultUsuario)
 
 } )
-app.get ('/v1/controle-usuario/usuario:id', cors(), bodyParserJSON, async function (request, response){
+app.get ('/v1/controle-usuario/usuario/:id', cors(), bodyParserJSON, async function (request, response){
     let id = request.params.id
     let contentType = request.headers ['content-type']
 
