@@ -71,9 +71,8 @@ const deleteUsuario = async function (id){
 //função para mostrar todas as usuarios 
 const selectAllUsuario = async function (){
     try {
-        sql = `select * from tbl_usuario order by id desc`
+        let result = await prisma.$queryRaw`SELECT * FROM vw_usuarios;`
 
-        let result = await prisma.$queryRawUnsafe(sql)
 
         if(result)
             return result

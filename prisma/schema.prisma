@@ -1,23 +1,23 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-provider = "mysql"
-url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
-// schema.prisma
 
-model User {
-id                 Int       @id @default(autoincrement())
-email              String    @unique
-password           String
-resetPasswordToken String?
-resetPasswordExpires DateTime?
+model tbl_usuario {
+  id    Int    @id @default(autoincrement())
+  nome  String @db.VarChar(100)
+  senha String @db.VarChar(100)
+  email String @db.VarChar(100)
+}
+
+model user {
+  id                   Int       @id @default(autoincrement())
+  email                String    @unique(map: "User_email_key")
+  password             String
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
 }
