@@ -18,6 +18,7 @@ insert into tbl_usuario(nome, email, senha) values(
 
 show tables;
 
+--criação das producere
 
 DELIMITER $$
 
@@ -41,3 +42,11 @@ select * from tbl_usuario order by id desc;
 CALL InserirUsuario('Teste', 'teste@email.com', '1234');
 
 DROP PROCEDURE IF EXISTS InserirUsuario;
+
+--criação das view 
+
+CREATE VIEW vw_usuarios AS
+SELECT *
+FROM tbl_usuario;
+
+SELECT * FROM vw_usuarios;
