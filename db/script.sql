@@ -43,6 +43,21 @@ CALL InserirUsuario('Teste', 'teste@email.com', '1234');
 
 DROP PROCEDURE IF EXISTS InserirUsuario;
 
+DELIMITER ;
+
+
+--buscar por id 
+	DELIMITER $$ 
+    create procedure search_usuario_id(
+		in p_id int 
+    )
+    begin 
+    select * from tbl_usuario 
+		where id = p_id;  
+    end$$
+    DELIMITER ; 
+
+
 --criação das view 
 
 CREATE VIEW vw_usuarios AS
