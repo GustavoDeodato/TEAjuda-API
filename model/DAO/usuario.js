@@ -86,9 +86,8 @@ const selectAllUsuario = async function (){
 //função para busca pelo ID 
 const selectByIdUsuario = async function (id){
     try {
-        let sql = `select * from tbl_usuario where id = ${id}`
 
-        let result = await prisma.$queryRawUnsafe(sql)
+        let result = await prisma.$queryRaw`CALL search_usuario_id(${id});`
 
         if(result)
             return result
