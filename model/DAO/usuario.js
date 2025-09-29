@@ -11,6 +11,7 @@ const {PrismaClient} = require('@prisma/client')
 //Instancia da classe do prisma client (cria um objeto)
 const prisma = new PrismaClient
 
+
 //Função para inserir novas usuarios
 const insertUsuario = async function (usuario){
     try {
@@ -19,7 +20,6 @@ const insertUsuario = async function (usuario){
         );
         console.log(result)
 
-        
      if(result)
          return true 
         else 
@@ -100,10 +100,82 @@ const selectByIdUsuario = async function (id){
     }
     }
 
+
+//Função para inserir um novo registro de redefinição de senha
+const InsertSenha = async function (id, token, data_expiracao){
+    try {
+        let sql = `
+        insert into tbl_redefinirsenha (id, token, data_expiracao)
+        values (
+            ${id}, 
+            '${token}', 
+            '${data_expiracao.toISOString().slice(0, 19).replace('T', ' ')}'
+         );
+        `
+
+        let result = await prisma.$executeRawUnsafe(sql)
+
+        if(result){
+            let sql = `
+             select * from tbl_redefinirsenha where id = ${id} order by criacao desc limit 1;
+            `
+
+            let criacaoRegistro = await prisma.$queryRawUnsafe(sql)
+            return criacaoRegistro[0]
+        }else{
+            return false
+        }
+    } catch (error) {
+        console.error("error ao redefinir senha ", error)
+        return false
+    }
+}
+
+//Função para selecioar por token
+const selectByToken = async function(token){
+    try {
+        let sql = `
+        select * from tbl_redefinirSenha where token = '${token}' and expirado = false order by criacao desc limit 1;
+        `
+
+        let result = await prisma.$queryRawUnsafe(sql)
+        return result && result.length > 0 ? result[0] : false
+    } catch (error) {
+        console.error("error ao selecionar por token ", error)
+        return false
+    }
+}
+
+//Função para atualizar o status de expirado
+const updateStatusExpirado = async function(id){
+
+    try {
+        let sql = `
+        update tbl_redefinirSenha set expirado = true where id = ${id};
+        `
+
+        let result = await prisma.$executeRawUnsafe(sql)
+
+       if (result) {
+        return true
+        
+       } else {
+         return false
+       }
+    } catch (error) {
+        console.error("error ao atualizar status expirado ", error)
+        return false
+    }
+}
+
 module.exports = {
     insertUsuario,
     updateUsuario,
     selectAllUsuario,
     deleteUsuario,
-    selectByIdUsuario
+    selectByIdUsuario,
+    InsertSenha,
+    selectByToken,
+    updateStatusExpirado
 }
+    
