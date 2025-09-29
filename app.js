@@ -32,7 +32,7 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const dotenv = require('dotenv')
-const authRoutes = require('./routes/authRoutes')
+const authRoutes = require('./routes/authRoutes.js')
 
 dotenv.config()
 
@@ -44,6 +44,9 @@ const app = express()
 
 const controllerUsuarios = require ('./controller/usuarios/ControllerUsuarios')
 
+app.use(cors())
+app.use(express.json())
+// app.use(express.urlencoded({ extended: true }))
 
 // request = significa a chegada de dados na api 
 // response = saida de dados na api 
@@ -53,14 +56,11 @@ app.use((request, response, next)=>{
     response.header('Access-Control-Allow-Origin', '*')
     //permissão de acesso para os metodos da api
     response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTONS')
-    //ativa as configurações do header para o cors 
-    app.use(cors())
-
+   
     next()
 })
 
 app.use('/api/auth', authRoutes)
-
 
 //Endpoint para inserir uma musica 
 app.post('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function(request, response){
@@ -71,18 +71,18 @@ app.post('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function(
     let dadosbody = request.body
    
     //chama a função da controller para inserir os dados e agurada o retorno da função 
-    let resultUsuario = await controllerUsuarios.inserirUsuario(contentType, dadosbody)
+    let resultUsuario = await controllerUsuarios.inserirUsuario(dadosbody, contentType)
  
     response.status(resultUsuario.status_code)
     response.json(resultUsuario)
 })
 app.get ('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function (request, response){
-    let id = request.params.id
+    let id = request.params
     let contentType = request.headers ['content-type']
 
-    let dadosBody = request.body
+    // let dadosBody = request.body
 
-    let resultUsuario = await controllerUsuarios.listarUsuario(dadosBody, contentType)
+    let resultUsuario = await controllerUsuarios.listarUsuario()
     response.status (resultUsuario.status_code)
     response.json(resultUsuario)
 
@@ -98,7 +98,7 @@ app.get ('/v1/controle-usuario/usuario/:id', cors(), bodyParserJSON, async funct
 
 } )
 
-app.put('/v1/controle-usuarios/usuario/:id', cors(), bodyParserJSON, async function (request, response) {
+app.put('/v1/controle-usuario/usuario/:id', cors(), bodyParserJSON, async function (request, response) {
 
     //Recebe o id da musica
     let idUsuario = request.params.id
@@ -115,25 +115,21 @@ app.put('/v1/controle-usuarios/usuario/:id', cors(), bodyParserJSON, async funct
     response.status(resultUsuario.status_code)
     response.json(resultUsuario)
 })
-app.post('/v1/controle-arusuariotistas/artista', cors(), bodyParserJSON, async function (request, response) {
-    //Recebe o content-type da requisição 
-    let contentType = request.headers['content-type']
-    //Recebe os dados da requisição 
-    let dadosBody = request.body
 
-    //Chama função da controller para inserir os dados e aguarda o retorno da função 
-    let resultArtista = await controllerArtista.inserirArtista(dadosBody, contentType)
-    response.status(resultArtista.status_code);
-    response.json(resultArtista);
+app.delete('/v1/controle-usuario/usuario/:id', cors(), bodyParserJSON, async function (request, response) {
+    let idUsuario = request.params.id
+    let resultUsuario = await controllerUsuarios.excluirUsuario(idUsuario)
 
+    response.status(resultUsuario.status_code)
+    response.json(resultUsuario)
 })
 
-// // Defina a porta e inicie o servidor
+//Defina a porta e inicie o servidor
 // const PORT = process.env.PORT || 3000
 // app.listen(PORT, () => {
 //     console.log(`Servidor rodando na porta ${PORT}`)
 // })
 
-app.listen(8080, function () {
+app.listen(3000, function () {
     console.log('API aguardando requisições...')
 })
