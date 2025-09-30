@@ -18,7 +18,6 @@ const insertUsuario = async function (usuario){
         const result = await prisma.$executeRawUnsafe(
             `CALL InserirUsuario('${usuario.nome}', '${usuario.email}', '${usuario.senha}')`
         );
-        console.log(result)
 
      if(result)
          return true 
@@ -26,7 +25,6 @@ const insertUsuario = async function (usuario){
          return false 
 
     } catch (error) {
-        console.log("Erro ao chamar producere", error)
         return false 
     }
 }
@@ -37,10 +35,7 @@ const updateUsuario = async function (usuario){
         let sql = `update tbl_usuario set 
                     nome = '${usuario.nome}',
                     email = '${usuario.email}',
-                    senha = '${usuario.senha}',
-                    token = '${usuario.token}',
-                    data_expiracao = '${usuario.data_expiracao}',
-                    expirado = ${usuario.expirado}
+                    senha = '${usuario.senha}'
         where id = ${usuario.id}`
 
         let result = await prisma.$executeRawUnsafe(sql)
@@ -83,7 +78,7 @@ const selectAllUsuario = async function (){
         else
             return false
     } catch (error) {
-        console.error("Erro ao buscar todos os usuarios", error)
+       
         return false 
     }
 }
@@ -104,6 +99,16 @@ const selectByIdUsuario = async function (id){
     }
     }
 
+const selectByEmailUsuario = async function (email) {
+    try {
+        let sql = `SELECT * FROM tbl_usuario WHERE email = '${email}'`;
+        let result = await prisma.$queryRawUnsafe(sql);
+        return result && result.length > 0 ? result[0] : false;
+    } catch (error) {
+        console.log("ERRO AO BUSCAR USUARIO POR EMAIL:", error);
+        return false;
+    }
+}
 
 //Função para inserir um novo registro de redefinição de senha
 const InsertSenha = async function (id, token, data_expiracao){
@@ -130,7 +135,6 @@ const InsertSenha = async function (id, token, data_expiracao){
             return false
         }
     } catch (error) {
-        console.error("error ao redefinir senha ", error)
         return false
     }
 }
@@ -167,7 +171,6 @@ const updateStatusExpirado = async function(id){
          return false
        }
     } catch (error) {
-        console.error("error ao atualizar status expirado ", error)
         return false
     }
 }
@@ -180,6 +183,7 @@ module.exports = {
     selectByIdUsuario,
     InsertSenha,
     selectByToken,
-    updateStatusExpirado
+    updateStatusExpirado,
+    selectByEmailUsuario
 }
     
