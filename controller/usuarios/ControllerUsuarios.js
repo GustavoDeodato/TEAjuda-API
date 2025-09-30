@@ -10,10 +10,14 @@ const { enviarEmail } = require('../../service/serviceEmail.js')
 
 const inserirUsuario = async function(usuario, contentType){
     try {
-        if(String(contentType).toLowerCase().includes('application/json')){
+        if(String(contentType).toLowerCase() === 'application/json'){
+
             if(usuario.nome == ''|| usuario.nome == null || usuario.nome == undefined || usuario.nome.length > 100|| 
                 usuario.senha == '' || usuario.senha == null || usuario.senha == undefined|| usuario.senha.length > 100 ||
                 usuario.email == '' || usuario.email == null || usuario.email == undefined || usuario.email.length > 100 
+                // usuario.token == '' || usuario.token == null || usuario.token == undefined || usuario.token.length > 100 ||
+                // usuario.data_expiracao == '' || usuario.data_expiracao == null || usuario.data_expiracao == undefined || usuario.data_expiracao.length > 100 ||
+                // usuario.expirado !== true && usuario.expirado !== false
             ){
                 return message.ERROR_REQUIRED_FIELDS//400
             }else{
@@ -32,40 +36,44 @@ const inserirUsuario = async function(usuario, contentType){
     }
 }
 
-const atualizarUsuario = async function(contentType, usuario, id){
+const atualizarUsuario = async function(usuario, id, contentType){
+    console.log(id)
     try {
-        if (String(contentType).toLowerCase() == 'application/json') {
+        if (String(contentType).toLocaleLowerCase() === 'application/json') {
+            console.log('Content-Type recebido:', contentType);
 
-            if (usuario.nome == '' || usuario.nome == null || usuario.nome == undefined || usuario.nome.length > 100 ||
-                usuario.email == ''|| usuario.email == null|| usuario.email == undefined|| usuario.email.length > 8  ||
-                id            == ''|| id == undefined      || id == null                || isNaN(id)
+            if (!usuario.id || 
+                usuario.nome == '' || usuario.nome == null || usuario.nome == undefined || usuario.nome.length > 100 ||
+                usuario.email== ''|| usuario.email == null|| usuario.email == undefined|| usuario.email.length > 100  ||
+                usuario.token == '' || usuario.token == null || usuario.token == undefined || usuario.token.length > 6 ||
+                !usuario.data_expiracao || 
+                usuario.expirado !== true && usuario.expirado !== false 
+                
             ) {
                 return message.ERROR_REQUIRED_FIELDS//status code 400
             } else {
                 //verifica se o ID existe no BD
-                let result = await usuariosDAO.selectByIdUsuario(id)
-
-                if (result != false || typeof (result) == 'object') {
-                    if (result.length > 0) {
-                        //Update
-                        //Adiciona o atributo do ID no JSON com os dados recebidos no corpo da requisição
-                        usuario.id = id
-                        let resultUsuario = await usuariosDAO.updateUsuario(id)
-                        if (resultUsuario) {
-                            return message.SUCESS_CREATED_ITEM
-                        } else {
-                            return message.ERROR_INTERNAL_SERVER_MODEL //500
-                        }
-                    } else {
-                        return message.ERROR_NOT_FOUND
-                    }
+                let result = await usuariosDAO.selectByIdUsuario(usuario.id)
+                console.log(result)
+              if(!result){
+                    return message.ERROR_NOT_FOUND; //404
                 }
+
+                console.log(usuario)
+                let resultUsuario = await usuariosDAO.updateUsuario(usuario)
+
+                if (resultUsuario) 
+                    return message.SUCESS_UPDATE_ITEM //200
+                else 
+                    return message.ERROR_INTERNAL_SERVER_MODEL //500    
+              
             }
         } else {
             return message.ERROR_CONTENT_TYPE //415
         }
     } catch (error) {
-        
+        console.log('Erro no atualizarUsuario:', error);
+        return message.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
     }
 }
 

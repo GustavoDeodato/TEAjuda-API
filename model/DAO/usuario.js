@@ -34,10 +34,14 @@ const insertUsuario = async function (usuario){
 //Função para atualizar uma usuario existente 
 const updateUsuario = async function (usuario){
     try {
-        let sql = `update tbl_usuario set nome = '${usuario.nome}',
+        let sql = `update tbl_usuario set 
+                    nome = '${usuario.nome}',
                     email = '${usuario.email}',
-                    senha = '${usuario.senha}'
-        where id = '${usuario.id}'`
+                    senha = '${usuario.senha}',
+                    token = '${usuario.token}',
+                    data_expiracao = '${usuario.data_expiracao}',
+                    expirado = ${usuario.expirado}
+        where id = ${usuario.id}`
 
         let result = await prisma.$executeRawUnsafe(sql)
 
@@ -79,6 +83,7 @@ const selectAllUsuario = async function (){
         else
             return false
     } catch (error) {
+        console.error("Erro ao buscar todos os usuarios", error)
         return false 
     }
 }

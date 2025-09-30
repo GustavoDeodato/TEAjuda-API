@@ -8,7 +8,7 @@
 --     PRIMARY KEY (`id`)
 -- ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-create database db_teajuda_aa;
+-- create database db_teajuda_aa;
 
 use db_teajuda_aa;
 
