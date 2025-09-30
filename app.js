@@ -6,7 +6,7 @@
  * Versão 1.0
  * Observações: 
  * Para criar a Api é necessario 
- *          express                        npm install express --save
+ *          express                        npm install express --snpxave
  *          cors                           npm install cors --save
  *          body-parser                    npm install body-parser --save
  * 
@@ -32,7 +32,10 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const dotenv = require('dotenv')
+
+
 const authRoutes = require('./routes/authRoutes.js')
+const controllerUsuarios = require ('./controller/usuarios/ControllerUsuarios.js')
 
 dotenv.config()
 
@@ -42,11 +45,9 @@ const bodyParserJSON = bodyParser.json()
 //incializando a utilização do express através da variavel app
 const app = express()
 
-const controllerUsuarios = require ('./controller/usuarios/ControllerUsuarios')
-
 app.use(cors())
 app.use(express.json())
-// app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }))
 
 // request = significa a chegada de dados na api 
 // response = saida de dados na api 
@@ -55,7 +56,7 @@ app.use((request, response, next)=>{
     //permissão de acessi para quem irá criar a API
     response.header('Access-Control-Allow-Origin', '*')
     //permissão de acesso para os metodos da api
-    response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTONS')
+    response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
    
     next()
 })
@@ -63,7 +64,7 @@ app.use((request, response, next)=>{
 app.use('/api/auth', authRoutes)
 
 //Endpoint para inserir uma musica 
-app.post('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function(request, response){
+app.post('/v1/controle-usuario/usuario', async function(request, response){
 
     let contentType = request.headers['content-type']
 
@@ -76,18 +77,15 @@ app.post('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function(
     response.status(resultUsuario.status_code)
     response.json(resultUsuario)
 })
-app.get ('/v1/controle-usuario/usuario', cors(), bodyParserJSON, async function (request, response){
-    let id = request.params
-    let contentType = request.headers ['content-type']
-
-    // let dadosBody = request.body
+app.get ('/v1/controle-usuario/usuario',  async function (request, response){
 
     let resultUsuario = await controllerUsuarios.listarUsuario()
+
     response.status (resultUsuario.status_code)
     response.json(resultUsuario)
 
 } )
-app.get ('/v1/controle-usuario/usuario/:id', cors(), bodyParserJSON, async function (request, response){
+app.get ('/v1/controle-usuario/usuario/:id', async function (request, response){
     let id = request.params.id
     let contentType = request.headers ['content-type']
     let dadosBody = request.body
@@ -98,9 +96,9 @@ app.get ('/v1/controle-usuario/usuario/:id', cors(), bodyParserJSON, async funct
 
 } )
 
-app.put('/v1/controle-usuario/usuario/:id', cors(), bodyParserJSON, async function (request, response) {
+app.put('/v1/controle-usuario/usuario/:id',  bodyParser.json(), async  (request, response) => {
 
-    //Recebe o id da musica
+    //Recebe o id do usuario
     let idUsuario = request.params.id
 
     //receber os dados da requisiçao 
@@ -108,15 +106,16 @@ app.put('/v1/controle-usuario/usuario/:id', cors(), bodyParserJSON, async functi
 
     //Recebe o content type 
     let contentType = request.headers['content-type']
+    console.log(contentType)
 
 
-    let resultUsuario = await controllerUsuarios.atualizarUsuario(idUsuario, dadosBody, contentType)
+    let resultUsuario = await controllerUsuarios.atualizarUsuario(dadosBody, idUsuario, contentType)
 
     response.status(resultUsuario.status_code)
     response.json(resultUsuario)
 })
 
-app.delete('/v1/controle-usuario/usuario/:id', cors(), bodyParserJSON, async function (request, response) {
+app.delete('/v1/controle-usuario/usuario/:id', async function (request, response) {
     let idUsuario = request.params.id
     let resultUsuario = await controllerUsuarios.excluirUsuario(idUsuario)
 
@@ -125,11 +124,11 @@ app.delete('/v1/controle-usuario/usuario/:id', cors(), bodyParserJSON, async fun
 })
 
 //Defina a porta e inicie o servidor
-// const PORT = process.env.PORT || 3000
-// app.listen(PORT, () => {
-//     console.log(`Servidor rodando na porta ${PORT}`)
-// })
-
-app.listen(3000, function () {
-    console.log('API aguardando requisições...')
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`)
 })
+
+// app.listen(3000, function () {
+//     console.log('API aguardando requisições...')
+// })
