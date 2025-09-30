@@ -38,6 +38,7 @@ const message = require('../../modulo/config.js')
 
 const authRoutes = require('./routes/authRoutes.js')
 const controllerUsuarios = require ('./controller/usuarios/ControllerUsuarios.js')
+const ControllerRedefinir = require('./controller/redefinirSenha/redefinirSenha.js')
 
 dotenv.config()
 
@@ -124,6 +125,14 @@ app.delete('/v1/controle-usuario/usuario/:id', async function (request, response
 })
 
 ///Endpoint's para API de redefinição de senha
+
+app.post('v1/controle-usuario/redefinir-senha', async function(request, response){
+
+    dadosBody
+
+    resultRedefinir = await ControllerRedefinir.redefinirSenha() 
+
+})
 
 
 
