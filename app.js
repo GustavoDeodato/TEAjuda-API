@@ -123,12 +123,7 @@ app.delete('/v1/controle-usuario/usuario/:id', async function (request, response
     response.json(resultUsuario)
 })
 
-//Defina a porta e inicie o servidor
-const PORT = process.env.PORT || 3000
-app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`)
-})
 
-// app.listen(3000, function () {
-//     console.log('API aguardando requisições...')
-// })
+app.listen(8080, function () {
+    console.log('API aguardando requisições...')
+})
