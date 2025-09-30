@@ -7,9 +7,7 @@
 
 /****************  STATUS CODE DE ERROS***********************/
 
-const ERROR_REQUIRED_FIELDS = {status: false, 
-    status_code:400, 
-    message: "Existem campos de preenchimento obrigatórios ou quantidade de caracteres que não foram atendidos na requisição"}
+const ERROR_REQUIRED_FIELDS = {status: false, status_code:400, message: "Existem campos de preenchimento obrigatórios ou quantidade de caracteres que não foram atendidos na requisição"}
 
 const ERROR_INTERNAL_SERVER_MODEL = {status: false, status_code:500, message: "Devido a um erro interno no servidor da MODEL, não foi possível processar a requisição"}
 
@@ -53,4 +51,4 @@ module.exports = {
     SUCCESS_LOGIN,
     SUCCESS_RECOVERT_EMAIL_SENT,
     SUCCESS_PASSWORD_RESET
-    }
+}

@@ -37,29 +37,26 @@ const inserirUsuario = async function(usuario, contentType){
 }
 
 const atualizarUsuario = async function(usuario, id, contentType){
-    console.log(id)
     try {
         if (String(contentType).toLocaleLowerCase() === 'application/json') {
             console.log('Content-Type recebido:', contentType);
 
             if (!usuario.id || 
                 usuario.nome == '' || usuario.nome == null || usuario.nome == undefined || usuario.nome.length > 100 ||
-                usuario.email== ''|| usuario.email == null|| usuario.email == undefined|| usuario.email.length > 100  ||
-                usuario.token == '' || usuario.token == null || usuario.token == undefined || usuario.token.length > 6 ||
-                !usuario.data_expiracao || 
-                usuario.expirado !== true && usuario.expirado !== false 
+                usuario.email== '' || usuario.email == null|| usuario.email == undefined|| usuario.email.length > 100  ||
+                usuario.senha=='' || usuario.senha == null || usuario.senha == undefined ||usuario.senha.length > 100
+                // !usuario.data_expiracao || 
+                // usuario.expirado !== true && usuario.expirado !== false 
                 
             ) {
                 return message.ERROR_REQUIRED_FIELDS//status code 400
             } else {
                 //verifica se o ID existe no BD
                 let result = await usuariosDAO.selectByIdUsuario(usuario.id)
-                console.log(result)
               if(!result){
                     return message.ERROR_NOT_FOUND; //404
                 }
 
-                console.log(usuario)
                 let resultUsuario = await usuariosDAO.updateUsuario(usuario)
 
                 if (resultUsuario) 
@@ -72,7 +69,6 @@ const atualizarUsuario = async function(usuario, id, contentType){
             return message.ERROR_CONTENT_TYPE //415
         }
     } catch (error) {
-        console.log('Erro no atualizarUsuario:', error);
         return message.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
     }
 }
@@ -141,7 +137,7 @@ const excluirUsuario = async function(id){
 }
 
 //funcao para solicitar o token
-const solicitarToken = async function(id, contentType){
+const solicitarToken = async function(email, contentType){
     try {
         if(contentType == 'application/json'){
            return message.ERROR_CONTENT_TYPE 
@@ -151,12 +147,14 @@ const solicitarToken = async function(id, contentType){
             return message.ERROR_REQUIRED_FIELDS
         }
 
-        let resultUsuario = await usuariosDAO.selectByIdUsuario(id)
+        let resultUsuario = await usuariosDAO.selectByEmailUsuario(email)
         if(!resultUsuario){
             return message.ERROR_NOT_FOUND
         }
         
-        let token = Math.floor(1000 + Math.random() * 9000).toString();
+        //math.random() serve para deixar o tokn em ordem aleatoria
+        //math.flor() impede que o token receba qualquer coisa que nao seja numero (-, ;, )
+        let token = Math.floor(100000 + Math.random() * 90000).toString();
         let expiracao = new Date(Date.now() + 15 * 60 * 1000) // validade 15 minutos
         
         let resultToken = await usuariosDAO.InsertSenha(id, token, expiracao)

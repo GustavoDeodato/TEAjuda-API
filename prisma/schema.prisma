@@ -10,14 +10,6 @@ datasource db {
 model tbl_usuario {
   id    Int    @id @default(autoincrement())
   nome  String @db.VarChar(100)
-  senha String @db.VarChar(100)
   email String @db.VarChar(100)
-}
-
-model user {
-  id                   Int       @id @default(autoincrement())
-  email                String    @unique(map: "User_email_key")
-  password             String
-  resetPasswordToken   String?
-  resetPasswordExpires DateTime?
+  senha String @db.VarChar(100)
 }

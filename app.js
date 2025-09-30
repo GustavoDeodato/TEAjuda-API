@@ -6,7 +6,7 @@
  * Versão 1.0
  * Observações: 
  * Para criar a Api é necessario 
- *          express                        npm install express --snpxave
+ *          express                        npm install express --save
  *          cors                           npm install cors --save
  *          body-parser                    npm install body-parser --save
  * 
@@ -33,6 +33,8 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const dotenv = require('dotenv')
 
+const usuarioDAO = require('../TEAjuda-API/model/DAO/usuario.js')
+const message = require('../../modulo/config.js')
 
 const authRoutes = require('./routes/authRoutes.js')
 const controllerUsuarios = require ('./controller/usuarios/ControllerUsuarios.js')
@@ -123,12 +125,43 @@ app.delete('/v1/controle-usuario/usuario/:id', async function (request, response
     response.json(resultUsuario)
 })
 
-//Defina a porta e inicie o servidor
-const PORT = process.env.PORT || 3000
-app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`)
+app.post('/v1/controle-usuario/senha/solicitar-redefinicao', async function (requestBody, contentType) {
+    try {
+        if(contentType !== 'application/json') {
+            return message.ERROR_REQUIRED_FIELDS
+        }
+
+        let resultUsuario = await usuarioDAO.selectByEmailUsuario
+
+        if(!resultUsuario){
+            return message.SUCESS_CREATED_ITEM
+        }
+
+        const userId = resultUsuario.id;
+
+        const token = generateToken()
+        const data_expiracao = Date.now() + (1000 * 60 * 15)
+
+        const resultInsert = await usuarioDAO
+    } catch (error) {
+        
+    }
+    
 })
 
-// app.listen(3000, function () {
-//     console.log('API aguardando requisições...')
+
+
+
+
+
+
+
+//Defina a porta e inicie o servidor
+// const PORT = process.env.PORT || 3000
+// app.listen(PORT, () => {
+//     console.log(`Servidor rodando na porta ${PORT}`)
 // })
+
+app.listen(8080, function () {
+    console.log('API aguardando requisições...')
+})
