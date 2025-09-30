@@ -3,127 +3,93 @@
 const express = require('express');
 const router = express.Router();
 const verificarToken = require('../middleware/verificarToken.js');
-// const { PrismaClient } = require('@prisma/client');
-// const prisma = new PrismaClient();
-// const sendEmail = require('../utils/sendemail');
-// const crypto = require('crypto');
-// const jwt = require('jsonwebtoken');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+const sendEmail = require('../utils/sendemail');
+const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser')
 const bodyParserJSON = bodyParser.json()
-//const bcrypt = require('bcrypt');
-// const dotenv = require('dotenv');
-// dotenv.config();
+const bcrypt = require('bcrypt');
+const dotenv = require('dotenv');
+dotenv.config();
 
-// // Rota para solicitar redefinição de senha
-// router.post('/forgot-password', async (req, res) => {
-//     const { email } = req.body;
-//     try {
-//         const user = await prisma.user.findUnique({ where: { email } });
-//         if (!user) {
-//             return res.status(404).json({ message: 'Usuário não encontrado.' });
-//         }
+// Rota para solicitar redefinição de senha
+router.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
+        }
 
-//         const resetToken = crypto.randomBytes(32).toString('hex');
-//         const tokenHash = await jwt.sign({ resetToken }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const tokenHash = await jwt.sign({ resetToken }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-//         await prisma.user.update({
-//             where: { id: user.id },
-//             data: {
-//                 resetPasswordToken: tokenHash,
-//                 resetPasswordExpires: new Date(Date.now() + 3600000) // Expira em 1 hora
-//             }
-//         });
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                resetPasswordToken: tokenHash,
+                resetPasswordExpires: new Date(Date.now() + 3600000) // Expira em 1 hora
+            }
+        });
 
-//         const resetUrl = `http://localhost:3000/reset-password/${tokenHash}`;
-//         const emailHtml = `
-//             <h2>Redefinição de Senha</h2>
-//             <p>Clique no link para redefinir sua senha:</p>
-//             <a href="${resetUrl}">Redefinir Senha</a>
-//             <p>O link expirará em 1 hora.</p>
-//         `;
+        const resetUrl = `http://localhost:3000/reset-password/${tokenHash}`;
+        const emailHtml = `
+            <h2>Redefinição de Senha</h2>
+            <p>Clique no link para redefinir sua senha:</p>
+            <a href="${resetUrl}">Redefinir Senha</a>
+            <p>O link expirará em 1 hora.</p>
+        `;
 
-//         await sendEmail(user.email, 'Redefinição de Senha', emailHtml);
+        await sendEmail(user.email, 'Redefinição de Senha', emailHtml);
 
-//         res.status(200).json({ message: 'Link de redefinição enviado para o seu e-mail.' });
+        res.status(200).json({ message: 'Link de redefinição enviado para o seu e-mail.' });
 
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Erro ao processar a solicitação.' });
-//     }
-// });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao processar a solicitação.' });
+    }
+});
 
-// // Rota para redefinir a senha
-// router.post('/reset-password/:token', async (req, res) => {
-//     const { token } = req.params;
-//     const { newPassword } = req.body;
+// Rota para redefinir a senha
+router.post('/reset-password/:token', async (req, res) => {
+    const { token } = req.params;
+    const { newPassword } = req.body;
 
-//     try {
-//         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
-//         const user = await prisma.user.findFirst({
-//             where: {
-//                 resetPasswordToken: token,
-//                 resetPasswordExpires: { gt: new Date() }
-//             }
-//         });
+        const user = await prisma.user.findFirst({
+            where: {
+                resetPasswordToken: token,
+                resetPasswordExpires: { gt: new Date() }
+            }
+        });
 
-//         if (!user) {
-//             return res.status(400).json({ message: 'Token de redefinição inválido ou expirado.' });
-//         }
+        if (!user) {
+            return res.status(400).json({ message: 'Token de redefinição inválido ou expirado.' });
+        }
 
-//         const salt = await bcrypt.genSalt(10);
-//         const hashedPassword = await bcrypt.hash(newPassword, salt);
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-//         await prisma.user.update({
-//             where: { id: user.id },
-//             data: {
-//                 password: hashedPassword,
-//                 resetPasswordToken: null,
-//                 resetPasswordExpires: null
-//             }
-//         });
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                password: hashedPassword,
+                resetPasswordToken: null,
+                resetPasswordExpires: null
+            }
+        });
 
-//         res.status(200).json({ message: 'Senha redefinida com sucesso.' });
+        res.status(200).json({ message: 'Senha redefinida com sucesso.' });
 
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Erro ao redefinir a senha.' });
-//     }
-// });
-
-// module.exports = router;
-
-const controllerUsuarios = require('../controller/usuarios/ControllerUsuarios.js');
-
-
-router.post('/v1/controle-usuario/redefinir-senha', bodyParserJSON, async (request, response) => {
-    let contentType = request.headers['content-type']
-    let dadosBody = request.body
-
-    let resultRedefinicao = await controllerUsuarios.redefinirSenha(dadosBody, contentType)
-
-    response.status(resultRedefinicao.status_code || 200)
-    response.json(resultRedefinicao)
-})
-
-router.post('/v1/controle-usuario/usuario/validar-token', bodyParserJSON, async (request, response) => {
-    let contentType = request.headers['content-type']
-    let dadosBody = request.body
-
-    let resultValidacao = await controllerUsuarios.validarToken(dadosBody, contentType)
-
-    response.status(resultValidacao.status_code || 200)
-    response.json(resultValidacao)
-})
-
-router.post('/v1/controle-usuario/usuario/nova-senha', bodyParserJSON, async (request, response) => {
-    let contentType = request.headers['content-type']
-    let dadosBody = request.body
-
-    let resultNovaSenha = await controllerUsuarios.novaSenha(dadosBody, contentType)
-
-    response.status(resultNovaSenha.status_code || 200)
-    response.json(resultNovaSenha)
-})
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao redefinir a senha.' });
+    }
+});
 
 module.exports = router;
+
