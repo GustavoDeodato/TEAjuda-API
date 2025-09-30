@@ -157,6 +157,8 @@ const excluirUsuario = async function(id){
 }
 
 
+
+
 module.exports = {
     inserirUsuario,
     atualizarUsuario,

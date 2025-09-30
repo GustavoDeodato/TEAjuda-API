@@ -10,6 +10,14 @@ senha varchar(100) not null
 
 );
 
+create table tbl_RecSenha(
+	id int not null primary key auto_increment,
+    token int not null,
+    usado boolean not null,
+    email varchar(100) not null 
+    
+);
+
 insert into tbl_usuario(nome, email, senha) values(
 'iubanco',
 'back@sembanco.com',
@@ -56,6 +64,20 @@ DELIMITER ;
 		where id = p_id;  
     end$$
     DELIMITER ; 
+
+-- delete por id 
+
+    
+  DELIMITER $$
+
+  CREATE PROCEDURE delete_usuario_id(IN p_id INT)
+  BEGIN
+      DELETE FROM tbl_usuario
+      WHERE id = p_id;
+  END$$
+
+  DELIMITER ;
+
 
 
 --criação das view 

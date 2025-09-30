@@ -28,7 +28,6 @@ const insertUsuario = async function (usuario){
         return false 
     }
 }
-
 //Função para atualizar uma usuario existente 
 const updateUsuario = async function (usuario){
     try {
@@ -49,7 +48,6 @@ const updateUsuario = async function (usuario){
         return false 
     }
 }
-
 //função para deletar uma usuario 
 const deleteUsuario = async function (id){
     try {
@@ -65,7 +63,6 @@ const deleteUsuario = async function (id){
     }
 
 }
-
 //função para mostrar todas as usuarios 
 const selectAllUsuario = async function (){
     try {
@@ -81,12 +78,38 @@ const selectAllUsuario = async function (){
         return false 
     }
 }
+//função para busca pelo ID 
+const selectByIdUsuario = async function (id){
+    try {
 
+        let result = await prisma.$queryRaw`CALL search_usuario_id(${id});`
+
+        if(result)
+            return result
+        else 
+          return false
+
+    } catch (error) {
+        return false 
+    }
+}
+
+const selectByEmailUsuario = async function (email) {
+    try {
+        let sql = `SELECT * FROM tbl_usuario WHERE email = '${email}'`;
+        let result = await prisma.$queryRawUnsafe(sql);
+        return result && result.length > 0 ? result[0] : false;
+    } catch (error) {
+        console.log("ERRO AO BUSCAR USUARIO POR EMAIL:", error);
+        return false;
+    }
+}
 module.exports = {
     insertUsuario,
     updateUsuario,
     selectAllUsuario,
     deleteUsuario,
-    selectByIdUsuario
+    selectByIdUsuario,
+    selectByEmailUsuario
 }
     
