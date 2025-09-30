@@ -10,6 +10,14 @@ senha varchar(100) not null
 
 );
 
+create table tbl_RecSenha(
+	id int not null primary key auto_increment,
+    token int not null,
+    usado boolean not null,
+    email varchar(100) not null 
+    
+);
+
 insert into tbl_usuario(nome, email, senha) values(
 'iubanco',
 'back@sembanco.com',
