@@ -6,7 +6,6 @@
  * ********************************************** */
 const message = require('../../modulo/config.js')
 const usuariosDAO = require('../../model/DAO/usuario.js')
-const { enviarEmail } = require('../../service/serviceEmail.js')
 
 const inserirUsuario = async function(usuario, contentType){
     try {
@@ -15,9 +14,7 @@ const inserirUsuario = async function(usuario, contentType){
             if(usuario.nome == ''|| usuario.nome == null || usuario.nome == undefined || usuario.nome.length > 100|| 
                 usuario.senha == '' || usuario.senha == null || usuario.senha == undefined|| usuario.senha.length > 100 ||
                 usuario.email == '' || usuario.email == null || usuario.email == undefined || usuario.email.length > 100 
-                // usuario.token == '' || usuario.token == null || usuario.token == undefined || usuario.token.length > 100 ||
-                // usuario.data_expiracao == '' || usuario.data_expiracao == null || usuario.data_expiracao == undefined || usuario.data_expiracao.length > 100 ||
-                // usuario.expirado !== true && usuario.expirado !== false
+        
             ){
                 return message.ERROR_REQUIRED_FIELDS//400
             }else{
@@ -127,112 +124,37 @@ const buscarUsuario = async function(id){
 
 const excluirUsuario = async function(id){
     try {
-       if(contentType !== 'application/json'){
-        return message.ERROR_CONTENT_TYPE //415
-       }       
-    } catch (error) {
-        return message.ERROR_INTERNAL_SERVER_CONTROLLER
-        
-    }
+        if(id == '' || id == null || id == undefined || isNaN(id)){
+                  return message.ERROR_REQUIRED_FIELDS//400
+        }else{
+           
+          let resultAlbum = await usuariosDAO.selectByIdUsuario(id)
+
+          if(resultAlbum != false || typeof(resultAlbum) == 'object'){
+              if(resultAlbum.length > 0){
+                  //delete
+
+                  result = await usuariosDAO.deleteUsuario(id)
+
+                  if(result)
+                      return message.SUCESS_DELETE_ITEM//200
+                  else 
+                  return message.ERROR_INTERNAL_SERVER_MODEL//500
+              }else{
+                  return message.ERROR_NOT_FOUND//404
+              }
+
+          }else{
+              return message.ERROR_INTERNAL_SERVER_CONTROLLER//500
+          }
+        }
+
+
+
+  } catch (error) {
+      return message.ERROR_INTERNAL_SERVER_CONTROLLER//500
+  }
 }
-
-//funcao para solicitar o token
-const solicitarToken = async function(email, contentType){
-    try {
-        if(contentType == 'application/json'){
-           return message.ERROR_CONTENT_TYPE 
-        }
-        
-        if(!usuario.email || usuario.email === ''){
-            return message.ERROR_REQUIRED_FIELDS
-        }
-
-        let resultUsuario = await usuariosDAO.selectByEmailUsuario(email)
-        if(!resultUsuario){
-            return message.ERROR_NOT_FOUND
-        }
-        
-        //math.random() serve para deixar o tokn em ordem aleatoria
-        //math.flor() impede que o token receba qualquer coisa que nao seja numero (-, ;, )
-        let token = Math.floor(100000 + Math.random() * 90000).toString();
-        let expiracao = new Date(Date.now() + 15 * 60 * 1000) // validade 15 minutos
-        
-        let resultToken = await usuariosDAO.InsertSenha(id, token, expiracao)
-
-        if(resultToken){
-            await  enviarEmail(resultUsuario.email, 'Redefinição de senha', `Seu token para redefinição de senha é: ${token}. Ele é válido por 15 minutos.`)
-            return message.SUCESS_CREATED_ITEM
-        }else {
-            return message.ERROR_INTERNAL_SERVER_MODEL//415
-        }
-
-    } catch (error) {
-        return message.ERROR_INTERNAL_SERVER_CONTROLLER
-    }
-}
-
-//função valida o token
-const validarToken = async function(token, contentType){
-    try {
-        if(contentType == 'application/json'){
-            return message.ERROR_CONTENT_TYPE
-        }
-
-        if(!token || token === ''){
-            return message.ERROR_REQUIRED_FIELDS
-        }
-
-        let resultToken = await usuariosDAO.updateStatusExpirado(token)
-        if(!resultToken){
-            return message.ERROR_INVALID_CODE
-        }
-
-        if(new Date(resultToken.expiracao) < new Date()){
-            return message.ERROR_CODE_EXPIRED
-        }
-
-        return{ status: true, status_code: 200, message: 'Token validado com sucesso!' }
-    
-    } catch (error) {
-        console.log("ERRO AO VALIDAR O CODIGO", error)
-        return message.ERROR_INTERNAL_SERVER_CONTROLLER
-    }
-}
-
-const redefinirSenha = async function(dados,  contentType){
-    try {
-        if(contentType == 'application/json'){
-            return message.ERROR_CONTENT_TYPE
-        }
-
-        if(!dados.email || dados.email === ''){
-            return message.ERROR_REQUIRED_FIELDS
-        }
-
-        let resultUsuario = await usuariosDAO.selectByToken(dados.token)
-        if(!resultUsuario){
-            return message.ERROR_CODE_EXPIRED
-        }
-   
-        let senhaHash = await bcrypt.hash(dados.senha, 10)
-        let resultUpdateSenha = await usuariosDAO.updateUsuario({
-            id: resultUsuario.id,
-            senha: senhaHash
-        })
-
-        if(resultUpdateSenha){
-            await  usuariosDAO.updateStatusExpirado(resultUsuario.id)
-            return message.SUCCESS_PASSWORD_RESET
-        }else {
-            return message.ERROR_INTERNAL_SERVER_MODEL
-        }
-
-    } catch (error) {
-        console.log("ERRO NO REDEFINIR SENHA --> ", error )
-        return message.ERROR_INTERNAL_SERVER_CONTROLLER
-    }
-}
-
 
 
 module.exports = {
@@ -240,8 +162,5 @@ module.exports = {
     atualizarUsuario,
     excluirUsuario,
     buscarUsuario,
-    listarUsuario,
-    solicitarToken,
-    validarToken,
-    redefinirSenha
+    listarUsuario
 }

@@ -65,7 +65,7 @@ app.use((request, response, next)=>{
 
 app.use('/api/auth', authRoutes)
 
-//Endpoint para inserir uma musica 
+//Endpoint's para API de usuarios
 app.post('/v1/controle-usuario/usuario', async function(request, response){
 
     let contentType = request.headers['content-type']
@@ -97,7 +97,6 @@ app.get ('/v1/controle-usuario/usuario/:id', async function (request, response){
     response.json(resultUsuario)
 
 } )
-
 app.put('/v1/controle-usuario/usuario/:id',  bodyParser.json(), async  (request, response) => {
 
     //Recebe o id do usuario
@@ -116,7 +115,6 @@ app.put('/v1/controle-usuario/usuario/:id',  bodyParser.json(), async  (request,
     response.status(resultUsuario.status_code)
     response.json(resultUsuario)
 })
-
 app.delete('/v1/controle-usuario/usuario/:id', async function (request, response) {
     let idUsuario = request.params.id
     let resultUsuario = await controllerUsuarios.excluirUsuario(idUsuario)
@@ -125,42 +123,12 @@ app.delete('/v1/controle-usuario/usuario/:id', async function (request, response
     response.json(resultUsuario)
 })
 
-app.post('/v1/controle-usuario/senha/solicitar-redefinicao', async function (requestBody, contentType) {
-    try {
-        if(contentType !== 'application/json') {
-            return message.ERROR_REQUIRED_FIELDS
-        }
-
-        let resultUsuario = await usuarioDAO.selectByEmailUsuario
-
-        if(!resultUsuario){
-            return message.SUCESS_CREATED_ITEM
-        }
-
-        const userId = resultUsuario.id;
-
-        const token = generateToken()
-        const data_expiracao = Date.now() + (1000 * 60 * 15)
-
-        const resultInsert = await usuarioDAO
-    } catch (error) {
-        
-    }
-    
-})
+///Endpoint's para API de redefinição de senha
 
 
 
 
 
-
-
-
-//Defina a porta e inicie o servidor
-// const PORT = process.env.PORT || 3000
-// app.listen(PORT, () => {
-//     console.log(`Servidor rodando na porta ${PORT}`)
-// })
 
 app.listen(8080, function () {
     console.log('API aguardando requisições...')

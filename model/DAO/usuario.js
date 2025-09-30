@@ -50,13 +50,12 @@ const updateUsuario = async function (usuario){
     }
 }
 
-
 //função para deletar uma usuario 
 const deleteUsuario = async function (id){
     try {
-        let sql = `delete from tbl_usuario where id = ${id}`
 
-        result = await prisma.$executeRawUnsafe(sql)
+        result = await prisma.$executeRaw`CALL delete_usuario_id (${id});`
+
         if(result)
             return result
         else 
@@ -83,107 +82,11 @@ const selectAllUsuario = async function (){
     }
 }
 
-//função para busca pelo ID 
-const selectByIdUsuario = async function (id){
-    try {
-
-        let result = await prisma.$queryRaw`CALL search_usuario_id(${id});`
-
-        if(result)
-            return result
-        else 
-          return false
-
-    } catch (error) {
-        return false 
-    }
-    }
-
-const selectByEmailUsuario = async function (email) {
-    try {
-        let sql = `SELECT * FROM tbl_usuario WHERE email = '${email}'`;
-        let result = await prisma.$queryRawUnsafe(sql);
-        return result && result.length > 0 ? result[0] : false;
-    } catch (error) {
-        console.log("ERRO AO BUSCAR USUARIO POR EMAIL:", error);
-        return false;
-    }
-}
-
-//Função para inserir um novo registro de redefinição de senha
-const InsertSenha = async function (id, token, data_expiracao){
-    try {
-        let sql = `
-        insert into tbl_redefinirsenha (id, token, data_expiracao)
-        values (
-            ${id}, 
-            '${token}', 
-            '${data_expiracao.toISOString().slice(0, 19).replace('T', ' ')}'
-         );
-        `
-
-        let result = await prisma.$executeRawUnsafe(sql)
-
-        if(result){
-            let sql = `
-             select * from tbl_redefinirsenha where id = ${id} order by criacao desc limit 1;
-            `
-
-            let criacaoRegistro = await prisma.$queryRawUnsafe(sql)
-            return criacaoRegistro[0]
-        }else{
-            return false
-        }
-    } catch (error) {
-        return false
-    }
-}
-
-//Função para selecioar por token
-const selectByToken = async function(token){
-    try {
-        let sql = `
-        select * from tbl_redefinirSenha where token = '${token}' and expirado = false order by criacao desc limit 1;
-        `
-
-        let result = await prisma.$queryRawUnsafe(sql)
-        return result && result.length > 0 ? result[0] : false
-    } catch (error) {
-        console.error("error ao selecionar por token ", error)
-        return false
-    }
-}
-
-//Função para atualizar o status de expirado
-const updateStatusExpirado = async function(id){
-
-    try {
-        let sql = `
-        update tbl_redefinirSenha set expirado = true where id = ${id};
-        `
-
-        let result = await prisma.$executeRawUnsafe(sql)
-
-       if (result) {
-        return true
-        
-       } else {
-         return false
-       }
-    } catch (error) {
-        return false
-    }
-}
-
 module.exports = {
     insertUsuario,
     updateUsuario,
     selectAllUsuario,
     deleteUsuario,
-    selectByIdUsuario,
-    InsertSenha,
-    selectByToken,
-    updateStatusExpirado,
-    selectByEmailUsuario
+    selectByIdUsuario
 }
     
