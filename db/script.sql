@@ -57,6 +57,20 @@ DELIMITER ;
     end$$
     DELIMITER ; 
 
+-- delete por id 
+
+    
+  DELIMITER $$
+
+  CREATE PROCEDURE delete_usuario_id(IN p_id INT)
+  BEGIN
+      DELETE FROM tbl_usuario
+      WHERE id = p_id;
+  END$$
+
+  DELIMITER ;
+
+
 
 --criação das view 
 
