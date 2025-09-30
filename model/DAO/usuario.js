@@ -59,9 +59,9 @@ const updateUsuario = async function (usuario){
 //função para deletar uma usuario 
 const deleteUsuario = async function (id){
     try {
-        let sql = `delete from tbl_usuario where id = ${id}`
 
-        result = await prisma.$executeRawUnsafe(sql)
+        result = await prisma.$executeRaw`CALL delete_usuario_id (${id});`
+
         if(result)
             return result
         else 
@@ -83,7 +83,6 @@ const selectAllUsuario = async function (){
         else
             return false
     } catch (error) {
-        console.error("Erro ao buscar todos os usuarios", error)
         return false 
     }
 }

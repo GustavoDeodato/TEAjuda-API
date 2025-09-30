@@ -131,13 +131,36 @@ const buscarUsuario = async function(id){
 
 const excluirUsuario = async function(id){
     try {
-       if(contentType !== 'application/json'){
-        return message.ERROR_CONTENT_TYPE //415
-       }       
-    } catch (error) {
-        return message.ERROR_INTERNAL_SERVER_CONTROLLER
-        
-    }
+        if(id == '' || id == null || id == undefined || isNaN(id)){
+                  return message.ERROR_REQUIRED_FIELDS//400
+        }else{
+           
+          let resultAlbum = await usuariosDAO.selectByIdUsuario(id)
+
+          if(resultAlbum != false || typeof(resultAlbum) == 'object'){
+              if(resultAlbum.length > 0){
+                  //delete
+
+                  result = await usuariosDAO.deleteUsuario(id)
+
+                  if(result)
+                      return message.SUCESS_DELETE_ITEM//200
+                  else 
+                  return message.ERROR_INTERNAL_SERVER_MODEL//500
+              }else{
+                  return message.ERROR_NOT_FOUND//404
+              }
+
+          }else{
+              return message.ERROR_INTERNAL_SERVER_CONTROLLER//500
+          }
+        }
+
+
+
+  } catch (error) {
+      return message.ERROR_INTERNAL_SERVER_CONTROLLER//500
+  }
 }
 
 //funcao para solicitar o token
