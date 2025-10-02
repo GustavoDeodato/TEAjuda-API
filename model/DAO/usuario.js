@@ -82,7 +82,7 @@ const selectAllUsuario = async function (){
 const selectByIdUsuario = async function (id){
     try {
 
-        let result = await prisma.$queryRaw`CALL search_usuario_id(${id});`
+        let result = await prisma.$queryRaw`SELECT * from tbl_usuario where id = ${id};`
 
         if(result)
             return result
@@ -98,10 +98,12 @@ const selectByEmailUsuario = async function (email) {
     try {
         let sql = `SELECT * FROM tbl_usuario WHERE email = '${email}'`
         let result = await prisma.$queryRawUnsafe(sql)
-        if(result)
-        return true
-        else
-        return false 
+
+        if(result.lenght > 0){
+            return result[0]
+        } else {
+            return nulll
+        }
             
     } catch (error) {
         console.log("ERRO AO BUSCAR USUARIO POR EMAIL:", error)

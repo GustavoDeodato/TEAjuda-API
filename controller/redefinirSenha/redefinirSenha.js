@@ -21,12 +21,12 @@ const solicitarRedefinicao = async function(email, contentType){
            return message.ERROR_CONTENT_TYPE //415
         }
         
-        if(!email || email == ''){
+        if(!email || email === ''){
             return message.ERROR_REQUIRED_FIELDS
         }
 
         let resultUsuario = await usuariosDAO.selectByEmailUsuario(email)
-        if(!true){
+        if(!resultUsuario){
             return message.ERROR_NOT_FOUND
         }
         
@@ -35,7 +35,7 @@ const solicitarRedefinicao = async function(email, contentType){
         let token = Math.floor(100000 + Math.random() * 90000).toString()
         let expiracao = new Date(Date.now() + 15 * 60 * 1000) // validade 15 minutos
         
-        let resultToken = await redefinirSenhaDAO.insertRedefinicao(id, token, expiracao)
+        let resultToken = await redefinirSenhaDAO.insertRedefinicao(resultUsuario.id, token, usado)
 
         if(resultToken){
             await enviaremail (resultUsuario.email, 'Redefinição de senha', `Seu token para redefinição de senha é: ${token}. Ele é válido por 15 minutos.`)

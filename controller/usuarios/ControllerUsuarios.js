@@ -32,35 +32,33 @@ const inserirUsuario = async function(usuario, contentType){
         return message.ERROR_INTERNAL_SERVER_CONTROLLER//500
     }
 }
-
 const atualizarUsuario = async function(usuario, id, contentType){
     try {
         if (String(contentType).toLocaleLowerCase() === 'application/json') {
             console.log('Content-Type recebido:', contentType);
 
-            if (!usuario.id || 
+            if (
+                !id || isNaN(id) || id <= 0 || // <<< validação do ID
                 usuario.nome == '' || usuario.nome == null || usuario.nome == undefined || usuario.nome.length > 100 ||
-                usuario.email== '' || usuario.email == null|| usuario.email == undefined|| usuario.email.length > 100  ||
-                usuario.senha=='' || usuario.senha == null || usuario.senha == undefined ||usuario.senha.length > 100
+                usuario.email == '' || usuario.email == null || usuario.email == undefined || usuario.email.length > 100  ||
+                usuario.senha == '' || usuario.senha == null || usuario.senha == undefined || usuario.senha.length > 100
                 // !usuario.data_expiracao || 
                 // usuario.expirado !== true && usuario.expirado !== false 
-                
             ) {
-                return message.ERROR_REQUIRED_FIELDS//status code 400
+                return message.ERROR_REQUIRED_FIELDS //400
             } else {
                 //verifica se o ID existe no BD
-                let result = await usuariosDAO.selectByIdUsuario(usuario.id)
-              if(!result){
+                let result = await usuariosDAO.selectByIdUsuario(id)
+                if(!result){
                     return message.ERROR_NOT_FOUND; //404
                 }
 
-                let resultUsuario = await usuariosDAO.updateUsuario(usuario)
+                let resultUsuario = await usuariosDAO.updateUsuario(usuario, id)
 
                 if (resultUsuario) 
                     return message.SUCESS_UPDATE_ITEM //200
                 else 
                     return message.ERROR_INTERNAL_SERVER_MODEL //500    
-              
             }
         } else {
             return message.ERROR_CONTENT_TYPE //415
@@ -69,6 +67,7 @@ const atualizarUsuario = async function(usuario, id, contentType){
         return message.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
     }
 }
+
 
 const listarUsuario = async function(){
     try {
