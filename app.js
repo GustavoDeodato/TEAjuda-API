@@ -33,9 +33,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const dotenv = require('dotenv')
 
-const usuarioDAO = require('../TEAjuda-API/model/DAO/usuario.js')
-const message = require('../../modulo/config.js')
-
+const message = require('../TEAjuda-API/modulo/config.js')
 const authRoutes = require('./routes/authRoutes.js')
 const controllerUsuarios = require ('./controller/usuarios/ControllerUsuarios.js')
 const ControllerRedefinir = require('./controller/redefinirSenha/redefinirSenha.js')
@@ -90,8 +88,6 @@ app.get ('/v1/controle-usuario/usuario',  async function (request, response){
 } )
 app.get ('/v1/controle-usuario/usuario/:id', async function (request, response){
     let id = request.params.id
-    let contentType = request.headers ['content-type']
-    let dadosBody = request.body
 
     let resultUsuario = await controllerUsuarios.buscarUsuario(id)
     response.status (resultUsuario.status_code)
@@ -126,13 +122,37 @@ app.delete('/v1/controle-usuario/usuario/:id', async function (request, response
 
 ///Endpoint's para API de redefinição de senha
 
-app.post('v1/controle-usuario/redefinir-senha', async function(request, response){
+app.post('/v1/controle-usuario/solicitacao-de-senha',bodyParserJSON, async function(request, response){
+   let contentType = request.headers['content-type']
+   let dadosBody = request.body
 
-    dadosBody
+   let resultRedefinicao = await ControllerRedefinir.solicitarRedefinicao(dadosBody, contentType)
 
-    resultRedefinir = await ControllerRedefinir.redefinirSenha() 
+   response.status(resultRedefinicao.status_code || 200)
+   response.json(resultRedefinicao)
 
 })
+
+app.post('/v1/controle-usuario/validar-token', bodyParserJSON, async (request, response) => {
+    let contentType = request.headers['content-type']
+    let dadosBody = request.body
+
+    let resultToken = await ControllerRedefinir.validarToken(dadosBody, contentType)
+
+    response.status(resultToken.status_code || 200)
+    response.json(resultToken)
+})
+
+app.post('/v1/controle-usuario/redefinir-senha', bodyParserJSON, async (request, response) => {
+    let contentType = request.headers['content-type']
+    let dadosBody = request.body
+
+    let resultRedefinir = await ControllerRedefinir.redefinirSenha(dadosBody, contentType)
+
+    response.status(resultRedefinir.status_code || 200)
+    response.json(resultRedefinir)
+})
+
 
 
 
