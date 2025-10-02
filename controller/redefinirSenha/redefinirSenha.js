@@ -12,27 +12,27 @@ const message = require('../../modulo/config.js')
 const redefinirSenhaDAO = require('../../model/DAO/redefinirSenha.js')
 const usuariosDAO = require('../../model/DAO/usuario.js')
 const bcrypt = require('bcrypt')
-const { enviaremail } = require('../../service/serviceEmail.js ')
+const { enviaremail } = require('../../service/serviceEmail.js')
 
 //solicitação de senha
 const solicitarRedefinicao = async function(email, contentType){
     try {
-        if(contentType == 'application/json'){
-           return message.ERROR_CONTENT_TYPE 
+        if(contentType !== 'application/json'){
+           return message.ERROR_CONTENT_TYPE //415
         }
         
-        if(!usuario.email || usuario.email === ''){
+        if(!email || email == ''){
             return message.ERROR_REQUIRED_FIELDS
         }
 
         let resultUsuario = await usuariosDAO.selectByEmailUsuario(email)
-        if(!resultUsuario){
+        if(!true){
             return message.ERROR_NOT_FOUND
         }
         
         //math.random() serve para deixar o tokn em ordem aleatoria
         //math.flor() impede que o token receba qualquer coisa que nao seja numero (-, ;, )
-        let token = Math.floor(100000 + Math.random() * 90000).toString();
+        let token = Math.floor(100000 + Math.random() * 90000).toString()
         let expiracao = new Date(Date.now() + 15 * 60 * 1000) // validade 15 minutos
         
         let resultToken = await redefinirSenhaDAO.insertRedefinicao(id, token, expiracao)
@@ -41,11 +41,11 @@ const solicitarRedefinicao = async function(email, contentType){
             await enviaremail (resultUsuario.email, 'Redefinição de senha', `Seu token para redefinição de senha é: ${token}. Ele é válido por 15 minutos.`)
             return message.SUCESS_CREATED_ITEM
         }else {
-            return message.ERROR_INTERNAL_SERVER_MODEL//415
+            return message.ERROR_INTERNAL_SERVER_MODEL//500
         }
 
     } catch (error) {
-        return message.ERROR_INTERNAL_SERVER_CONTROLLER
+        return message.ERROR_INTERNAL_SERVER_CONTROLLER //500
     }
 }
 

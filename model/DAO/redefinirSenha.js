@@ -18,19 +18,25 @@ const insertRedefinicao = async function (id, token, usado ){
         values (
             ${id}, 
             '${token}', 
-            '${data_expiracao.toISOString().slice(0, 19).replace('T', ' ')}'
+            ${usado}
          );
         `
 
         let result = await prisma.$executeRawUnsafe(sql)
 
         if(result){
-            let sql = `
+            let sqlSelect = `
              select * from tbl_recSenha where id = ${id} order by criacao desc limit 1;
             `
 
-            let criacaoRegistro = await prisma.$queryRawUnsafe(sql)
-            return criacaoRegistro[0]
+            let criacaoRegistro = await prisma.$queryRawUnsafe(sqlSelect)
+
+            if(criacaoRegistro && criacaoRegistro.length > 0){
+                return true
+            }else{
+                return false
+            }
+           
         }else{
             return false
         }
