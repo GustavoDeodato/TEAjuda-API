@@ -96,18 +96,28 @@ const selectByIdUsuario = async function (id){
 
 const selectByEmailUsuario = async function (email) {
     try {
-        let sql = `SELECT * FROM tbl_usuario WHERE email = '${email}'`
+        let sql = `select * from tbl_usuario where email = '${email}'`
         let result = await prisma.$queryRawUnsafe(sql)
-
-        if(result.lenght > 0){
-            return result[0]
-        } else {
-            return nulll
-        }
-            
+        return result && result.length > 0 ? result[0] : false
     } catch (error) {
         console.log("ERRO AO BUSCAR USUARIO POR EMAIL:", error)
         return false
+    }
+};
+
+
+const SelectLoginUsuario = async function (usuario){
+    try {
+
+        let sql = `Select * from tbl_usuario where email = '${usuario.email}' && senha = '${usuario.senha}'`
+        let result = await prisma.$executeRawUnsafe(sql)
+
+        if(result)
+            return result
+        else
+            return false 
+    } catch (error) {
+        return false 
     }
 }
 module.exports = {
@@ -116,6 +126,7 @@ module.exports = {
     selectAllUsuario,
     deleteUsuario,
     selectByIdUsuario,
-    selectByEmailUsuario
+    selectByEmailUsuario,
+    SelectLoginUsuario
 }
     

@@ -12,42 +12,47 @@ const message = require('../../modulo/config.js')
 const redefinirSenhaDAO = require('../../model/DAO/redefinirSenha.js')
 const usuariosDAO = require('../../model/DAO/usuario.js')
 const bcrypt = require('bcrypt')
-const { enviaremail } = require('../../service/serviceEmail.js')
+const { enviarEmail } = require('../../service/serviceEmail.js')
 
 //solicitação de senha
-const solicitarRedefinicao = async function(email, contentType){
+const solicitarRedefinicao = async function (email, contentType) {
     try {
-        if(contentType !== 'application/json'){
-           return message.ERROR_CONTENT_TYPE //415
+        if (contentType !== 'application/json') {
+            return message.ERROR_CONTENT_TYPE // 415
         }
-        
-        if(!email || email === ''){
-            return message.ERROR_REQUIRED_FIELDS
+
+        if (!email || email === '') {
+            return message.ERROR_REQUIRED_FIELDS // 400
         }
 
         let resultUsuario = await usuariosDAO.selectByEmailUsuario(email)
-        if(!resultUsuario){
-            return message.ERROR_NOT_FOUND
+        if (!resultUsuario) {
+            return message.ERROR_NOT_FOUND // 404
         }
-        
-        //math.random() serve para deixar o tokn em ordem aleatoria
-        //math.flor() impede que o token receba qualquer coisa que nao seja numero (-, ;, )
+
+        // token aleatório de 5 dígitos
         let token = Math.floor(100000 + Math.random() * 90000).toString()
-        let expiracao = new Date(Date.now() + 15 * 60 * 1000) // validade 15 minutos
-        
+
+        // Define o token como não usado (0)
+        let usado = 0
+
         let resultToken = await redefinirSenhaDAO.insertRedefinicao(resultUsuario.id, token, usado)
 
-        if(resultToken){
-            await enviaremail (resultUsuario.email, 'Redefinição de senha', `Seu token para redefinição de senha é: ${token}. Ele é válido por 15 minutos.`)
-            return message.SUCESS_CREATED_ITEM
-        }else {
-            return message.ERROR_INTERNAL_SERVER_MODEL//500
+        if (resultToken) {
+            // Envia o e-mail com o token
+            await enviarEmail(resultUsuario.email, token)
+
+            return message.SUCESS_CREATED_ITEM // 201
+        } else {
+            return message.ERROR_INTERNAL_SERVER_MODEL // 500
         }
 
     } catch (error) {
-        return message.ERROR_INTERNAL_SERVER_CONTROLLER //500
+        console.error("Erro no controller solicitarRedefinicao:", error)
+        return message.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
 }
+
 
 //função valida o token
 const validarToken = async function(token, contentType){
