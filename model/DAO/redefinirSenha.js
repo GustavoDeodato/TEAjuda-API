@@ -49,7 +49,7 @@ const insertRedefinicao = async function (id, token, usado ){
 const selectByToken = async function(token){
     try {
         let sql = `
-        select * from tbl_redefinirSenha where token = '${token}' and expirado = false order by criacao desc limit 1;
+        select * from tbl_redefinirSenha where token = '${token}' and usado = false order by criacao desc limit 1;
         `
 
         let result = await prisma.$queryRawUnsafe(sql)
@@ -65,7 +65,7 @@ const updateStatusUsado = async function(id){
 
     try {
         let sql = `
-        update tbl_recSenha set expirado = true where id = ${id};
+        update tbl_recSenha set usado = true where id = ${id};
         `
 
         let result = await prisma.$executeRawUnsafe(sql)
@@ -81,10 +81,10 @@ const updateStatusUsado = async function(id){
     }
 }
 
-const senhaAtualizada = async function (id, ) {
+const senhaAtualizada = async function (email, novaSenha ) {
     try {
 
-        let sql = ` update tbl_usuario set senha_hash = '${novaSenha}'  where id = ${id}
+        let sql = ` update tbl_usuario set senha = '${novaSenha}'  where id = ${email}
         `
 
         let result = await prisma.$executeRawUnsafe(sql)

@@ -31,14 +31,11 @@
 const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
-const dotenv = require('dotenv')
 
-const message = require('../TEAjuda-API/modulo/config.js')
 const authRoutes = require('./routes/authRoutes.js')
 const controllerUsuarios = require ('./controller/usuarios/ControllerUsuarios.js')
-const ControllerRedefinir = require('./controller/redefinirSenha/redefinirSenha.js')
+const ControllerRedefinir = require('./controller/redefinirSenha/ControllerRedefinirSenha.js')
 
-dotenv.config()
 
 //Cria um objeto para o body do tipo json 
 const bodyParserJSON = bodyParser.json()
@@ -62,7 +59,6 @@ app.use((request, response, next)=>{
     next()
 })
 
-app.use('/api/auth', authRoutes)
 
 //Endpoint's para API de usuarios
 app.post('/v1/controle-usuario/usuario', async function(request, response){
@@ -142,22 +138,20 @@ app.post('/v1/controle-usuario/validar-token', bodyParserJSON, async (request, r
     response.status(resultToken.status_code || 200)
     response.json(resultToken)
 })
+/////////////////////////////////////////////////// RECUPERAR SENHA ///////////////////////////////////////////////////////
+
 
 app.post('/v1/controle-usuario/redefinir-senha', bodyParserJSON, async (request, response) => {
-    let contentType = request.headers['content-type']
-    let dadosBody = request.body
+    const contentType = request.headers['content-type'];
 
-    let resultRedefinir = await ControllerRedefinir.redefinirSenha(dadosBody, contentType)
+    const dadosBody = request.body;
 
-    response.status(resultRedefinir.status_code || 200)
-    response.json(resultRedefinir)
+    const resultRedefinir = await ControllerRedefinir.solicitarRedefinicao(dadosBody.email, contentType);
+
+
+    response.status(resultRedefinir.status_code || 200);
+    response.json(resultRedefinir);
 })
-
-
-
-
-
-
 
 app.listen(8080, function () {
     console.log('API aguardando requisições...')

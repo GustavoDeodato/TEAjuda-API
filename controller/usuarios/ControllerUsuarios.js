@@ -155,7 +155,33 @@ const excluirUsuario = async function(id){
   }
 }
 
+const LoginUsuario = async function (usuario){
+    try {
+        if(usuario.senha === ''|| usuario.senha === null || usuario.senha === undefined || String(usuario.senha).toLowerCase || usuario.senha.length > 100
+            ||usuario.email === ''|| usuario.email === null || usuario.email === undefined || String(usuario.email).toLowerCase || usuario.email.length > 100  ){
+                return message.ERROR_REQUIRED_FIELDS
+        }else{
+            let dados = {}
+            
+            let result = await usuariosDAO.SelectLoginUsuario()
 
+            if(result != false || typeof(result) == 'object'){
+                if(length(result) > 0){
+                dados.status = true,
+                dados.status_code = 200, 
+                dados.usuarios = resultusuario
+                return dadosusuario
+
+                }
+            }else{
+                return message.ERROR_CONTENT_TYPE//415
+            }
+        }return message.ERROR_INTERNAL_SERVER_MODEL//500
+    } catch (error) {
+        return message.ERROR_INTERNAL_SERVER_CONTROLLER//500
+    }
+
+}
 
 
 module.exports = {
@@ -163,5 +189,6 @@ module.exports = {
     atualizarUsuario,
     excluirUsuario,
     buscarUsuario,
-    listarUsuario
+    listarUsuario,
+    LoginUsuario
 }
