@@ -13,23 +13,24 @@ const prisma = new PrismaClient
 
 
 //Função para inserir novas usuarios
+// DAO - Garantindo a segurança da comunicação com o banco
 const insertUsuario = async function (usuario){
     try {
-        let sql = `insert into tbl_usuario (nome, email, senha)values(
-                '${usuario.nome}'),
-                (${usuario.email}),
-                (${usuario.senha})`
+        let result = await prisma.usuario.create({
+            data: {
+                nome: usuario.nome,
+                email: usuario.email,
+                senha: usuario.senha, 
+            },
+        })
 
-        let result = await prisma.$executeRawUnsafe(sql)
-        
-
-     if(result)
-         return true 
+        if(result)
+            return true 
         else 
-         return false 
+            return false
 
     } catch (error) {
-        return false 
+        return false
     }
 }
 //Função para atualizar uma usuario existente 
@@ -98,7 +99,7 @@ const selectByIdUsuario = async function (id){
         return false 
     }
 }
-
+//seleciona o usuario por email
 const selectByEmailUsuario = async function (email) {
     try {
         let sql = `select * from tbl_usuario where email = '${email}'`
@@ -108,7 +109,7 @@ const selectByEmailUsuario = async function (email) {
         console.log("ERRO AO BUSCAR USUARIO POR EMAIL:", error)
         return false
     }
-};
+}
 
 //select do email do usuario para o login 
 const SelectLoginUsuario = async function (email){

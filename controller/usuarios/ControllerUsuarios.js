@@ -9,35 +9,57 @@ const usuariosDAO = require('../../model/DAO/usuario.js')
 const bcrypt = require('bcryptjs'); 
 
 
-const inserirUsuario = async function(usuario, contentType){
-    try {
-        if(String(contentType).toLowerCase() === 'application/json'){
-
-            if(usuario.nome == ''|| usuario.nome == null || usuario.nome == undefined || usuario.nome.length > 100|| 
-                usuario.senha == '' || usuario.senha == null || usuario.senha == undefined|| usuario.senha.length > 100 ||
-                usuario.email == '' || usuario.email == null || usuario.email == undefined || usuario.email.length > 100 
-        
-            ){
-                return message.ERROR_REQUIRED_FIELDS//400
-            }else{
-                let resultUsuario = await usuariosDAO.insertUsuario(usuario)
-
-                if(resultUsuario)
-                    return message.SUCESS_CREATED_ITEM//201
-                else return message.ERROR_INTERNAL_SERVER_MODEL//500
-                
+const inserirUsuario = async function (usuario) {
+    
+    const saltRounds = 12
+    if(String(contentType).toLowerCase() === 'application/json'){
+        if(usuario.nome == ''|| usuario.nome == null || usuario.nome == undefined || usuario.nome.length > 100|| 
+            usuario.senha == '' || usuario.senha == null || usuario.senha == undefined|| usuario.senha.length > 100 ||
+            usuario.email == '' || usuario.email == null || usuario.email == undefined || usuario.email.length > 100 
+    
+        ){
+            return message.ERROR_REQUIRED_FIELDS//400
+    }else{
+        try {
+            // 1. **CRIAÇÃO DO HASH SEGURO**
+            // A função hash do bcrypt gera o salt internamente e então faz o hash da senha
+            // com o número de rounds especificado (saltRounds).
+            const senhaHash = await bcrypt.hash(usuario.senha, saltRounds); 
+    
+            // 2. **CRIAÇÃO DO OBJETO PARA SALVAR**
+            const novoUsuario = {
+                nome: usuario.nome,
+                email: usuario.email,
+                // **SUBSTITUIÇÃO SEGURA:** A senha original é substituída pelo hash
+                senha: senhaHash 
+            };
+    
+            // 3. **SALVAMENTO NO BANCO DE DADOS**
+            const resultado = await usuariosDAO.insertUsuario(novoUsuario);
+    
+            // 4. **RESPOSTA APROPRIADA**
+            if (resultado) {
+                // Status 201 Created é o padrão para criação bem-sucedida de um novo recurso
+                return message.SUCESS_CREATED_ITEM
+            } else {
+                // Em caso de falha do DAO (ex: falha na conexão com o DB)
+                return message.ERROR_INTERNAL_SERVER_MODEL
             }
-        }else{
-            return message.ERROR_CONTENT_TYPE//415
+    
+        } catch (error) {
+            return message.ERROR_INTERNAL_SERVER_CONTROLLER
+               
         }
-    } catch (error) {
-        return message.ERROR_INTERNAL_SERVER_CONTROLLER//500
     }
+
 }
+   
+}
+
 const atualizarUsuario = async function(usuario, id, contentType){
     try {
         if (String(contentType).toLocaleLowerCase() === 'application/json') {
-            console.log('Content-Type recebido:', contentType);
+            console.log('Content-Type recebido:', contentType)
 
             if (
                 !id || isNaN(id) || id <= 0 || // <<< validação do ID
@@ -160,7 +182,7 @@ const excluirUsuario = async function(id){
 
 const LoginUsuario = async function (usuario){
   try {
-    const { email, senha } = usuario;
+    const { email, senha } = usuario
 
     if(String(contentType).toLowerCase() === 'application/json'){
         if(usuario.email == '' || usuario.email == null || usuario.email == undefined || usuario.email.length > 100){
