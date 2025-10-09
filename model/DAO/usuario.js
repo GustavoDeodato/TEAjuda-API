@@ -15,9 +15,13 @@ const prisma = new PrismaClient
 //Função para inserir novas usuarios
 const insertUsuario = async function (usuario){
     try {
-        const result = await prisma.$executeRawUnsafe(
-            `CALL InserirUsuario('${usuario.nome}', '${usuario.email}', '${usuario.senha}')`
-        );
+        let sql = `insert into tbl_usuario (nome, email, senha)values(
+                '${usuario.nome}'),
+                (${usuario.email}),
+                (${usuario.senha})`
+
+        let result = await prisma.$executeRawUnsafe(sql)
+        
 
      if(result)
          return true 
@@ -66,7 +70,8 @@ const deleteUsuario = async function (id){
 //função para mostrar todas as usuarios 
 const selectAllUsuario = async function (){
     try {
-        let result = await prisma.$queryRaw`SELECT * FROM vw_usuarios;`
+        let sql = `select * from tbl_usuario`
+        let result = await prisma.$queryRaw(sql)
 
 
         if(result)
@@ -105,19 +110,16 @@ const selectByEmailUsuario = async function (email) {
     }
 };
 
-
-const SelectLoginUsuario = async function (usuario){
+//select do email do usuario para o login 
+const SelectLoginUsuario = async function (email){
     try {
+        let sql = `Select * from tbl_usuario where email = $1 AND senha = $2`
+        let result = await prisma.$queryRaw(sql, usuario.email, usuario.senha)
 
-        let sql = `Select * from tbl_usuario where email = '${usuario.email}' && senha = '${usuario.senha}'`
-        let result = await prisma.$executeRawUnsafe(sql)
-
-        if(result)
-            return result
-        else
-            return false 
+        return result[0] || null
     } catch (error) {
-        return false 
+        console.error("Erro no DAO ao buscar login:", error)
+        return null
     }
 }
 module.exports = {

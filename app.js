@@ -118,11 +118,10 @@ app.delete('/v1/controle-usuario/usuario/:id', async function (request, response
 })
 
 //endpoint de login 
-app.post('v1/controle-usuarios/usuario/login/:nome/:email', async function(request, response){
+app.post('v1/controle-usuario/usuario/login', async function(request, response){
 
-    let emailUsuario = request.params.email
-    let nomeUsuario = request.params.nome
-    let resultUsuario = await controllerUsuarios.LoginUsuario(emailUsuario, nomeUsuario)
+    let {email, nome} = request.body
+    let resultUsuario = await controllerUsuarios.LoginUsuario({email, nome})
 
     response.status(resultUsuario.status_code)
     response.json(resultUsuario)
