@@ -9,11 +9,10 @@
 const {PrismaClient} = require('@prisma/client')
 
 //Instancia da classe do prisma client (cria um objeto)
-const prisma = new PrismaClient
+const prisma = new PrismaClient()
 
 
 //Função para inserir novas usuarios
-// DAO - Garantindo a segurança da comunicação com o banco
 const insertUsuario = async function (usuario){
     try {
         let result = await prisma.usuario.create({
@@ -23,13 +22,14 @@ const insertUsuario = async function (usuario){
                 senha: usuario.senha, 
             },
         })
-
         if(result)
             return true 
+        
         else 
             return false
 
     } catch (error) {
+        console.error("ERRO NO PRISMA:", error)
         return false
     }
 }

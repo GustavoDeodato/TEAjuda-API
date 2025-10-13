@@ -60,9 +60,8 @@ app.use((request, response, next)=>{
     next()
 })
 
-
-//Endpoint's para API de usuarios
-app.post('/v1/controle-usuario/usuario', async function(request, response){
+//endpoint para inserir um usuario
+app.post('/v1/teajuda/usuario', cors(), bodyParserJSON, async function(request, response){
 
     let contentType = request.headers['content-type']
 
@@ -70,12 +69,14 @@ app.post('/v1/controle-usuario/usuario', async function(request, response){
     let dadosbody = request.body
    
     //chama a função da controller para inserir os dados e agurada o retorno da função 
-    let resultUsuario = await controllerUsuarios.inserirUsuario(dadosbody, contentType)
+    let resultUsuario = await controllerUsuarios.inserirUsuario(contentType, dadosbody)
  
     response.status(resultUsuario.status_code)
     response.json(resultUsuario)
 })
-app.get ('/v1/controle-usuario/usuario',  async function (request, response){
+
+//endpoint para selecionar todos os usuarios 
+app.get ('/v1/teajuda/usuario',  async function (request, response){
 
     let resultUsuario = await controllerUsuarios.listarUsuario()
 
@@ -83,7 +84,7 @@ app.get ('/v1/controle-usuario/usuario',  async function (request, response){
     response.json(resultUsuario)
 
 } )
-app.get ('/v1/controle-usuario/usuario/:id', async function (request, response){
+app.get ('/v1/teajuda/usuario/:id', async function (request, response){
     let id = request.params.id
 
     let resultUsuario = await controllerUsuarios.buscarUsuario(id)
@@ -91,7 +92,7 @@ app.get ('/v1/controle-usuario/usuario/:id', async function (request, response){
     response.json(resultUsuario)
 
 } )
-app.put('/v1/controle-usuario/usuario/:id',  bodyParser.json(), async  (request, response) => {
+app.put('/v1/teajuda/usuario/:id',  bodyParser.json(), async  (request, response) => {
 
     //Recebe o id do usuario
     let idUsuario = request.params.id
@@ -109,7 +110,7 @@ app.put('/v1/controle-usuario/usuario/:id',  bodyParser.json(), async  (request,
     response.status(resultUsuario.status_code)
     response.json(resultUsuario)
 })
-app.delete('/v1/controle-usuario/usuario/:id', async function (request, response) {
+app.delete('/v1/teajuda/usuario/:id', async function (request, response) {
     let idUsuario = request.params.id
     let resultUsuario = await controllerUsuarios.excluirUsuario(idUsuario)
 
@@ -118,7 +119,7 @@ app.delete('/v1/controle-usuario/usuario/:id', async function (request, response
 })
 
 //endpoint de login 
-app.post('v1/controle-usuario/usuario/login', async function(request, response){
+app.post('v1/teajuda/usuario/login', async function(request, response){
 
     let {email, nome} = request.body
     let resultUsuario = await controllerUsuarios.LoginUsuario({email, nome})
@@ -129,83 +130,83 @@ app.post('v1/controle-usuario/usuario/login', async function(request, response){
 })
 
 /////////////////////////////////////////////////// G M A I L ///////////////////////////////////////////////////////////////
-require('dotenv').config()
-const session = require('express-session')
-const passport = require('passport')
-const GoogleStrategy = require('passport-google-oauth20').Strategy
+// require('dotenv').config()
+// const session = require('express-session')
+// const passport = require('passport')
+// const GoogleStrategy = require('passport-google-oauth20').Strategy
 
 
-app.use(passport.initialize())
-app.use(passport.session())
+// app.use(passport.initialize())
+// app.use(passport.session())
 
-passport.serializeUser((user, done) => {
-  done(null, user.id)
-})
+// passport.serializeUser((user, done) => {
+//   done(null, user.id)
+// })
 
-passport.deserializeUser(async (id, done) => {
-  const user = await prisma.usuario.findUnique({ where: { id } })
-  done(null, user)
-})
+// passport.deserializeUser(async (id, done) => {
+//   const user = await prisma.usuario.findUnique({ where: { id } })
+//   done(null, user)
+// })
 
-// Config Google OAuth
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: process.env.GOOGLE_CALLBACK_URL
-}, async (accessToken, refreshToken, profile, done) => {
-  try {
-    const email = profile.emails[0].value
-    const nome = profile.displayName
+// // Config Google OAuth
+// passport.use(new GoogleStrategy({
+//   clientID: process.env.GOOGLE_CLIENT_ID,
+//   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//   callbackURL: process.env.GOOGLE_CALLBACK_URL
+// }, async (accessToken, refreshToken, profile, done) => {
+//   try {
+//     const email = profile.emails[0].value
+//     const nome = profile.displayName
 
-    let usuario = await prisma.usuario.findUnique({
-      where: { email }
-    })
+//     let usuario = await prisma.usuario.findUnique({
+//       where: { email }
+//     })
 
-    // Se não existir, cria
-    if (!usuario) {
-      usuario = await prisma.usuario.create({
-        data: { nome, email }
-      })
-    }
+//     // Se não existir, cria
+//     if (!usuario) {
+//       usuario = await prisma.usuario.create({
+//         data: { nome, email }
+//       })
+//     }
 
-    return done(null, usuario)
-  } catch (error) {
-    return done(error, null)
-  }
-}))
+//     return done(null, usuario)
+//   } catch (error) {
+//     return done(error, null)
+//   }
+// }))
 
-// Rota inicial
-app.get('/', (req, res) => {
-  res.send('<a href="/auth/google">Entrar com Google</a>')
-})
+// // Rota inicial
+// app.get('/', (req, res) => {
+//   res.send('<a href="/auth/google">Entrar com Google</a>')
+// })
 
-// Login Google
-app.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-)
+// // Login Google
+// app.get('/auth/google',
+//   passport.authenticate('google', { scope: ['profile', 'email'] })
+// )
 
-// Callback Google
-app.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/' }),
-  (req, res) => {
-    res.redirect('/perfil')
-  }
-)
+// // Callback Google
+// app.get('/auth/google/callback',
+//   passport.authenticate('google', { failureRedirect: '/' }),
+//   (req, res) => {
+//     res.redirect('/perfil')
+//   }
+// )
 
-// Perfil do usuário
-app.get('/perfil', async (req, res) => {
-  if (!req.user) return res.redirect('/')
-  res.send(`
-    <h1>Bem-vindo, ${req.user.nome}</h1>
-    <p>Email: ${req.user.email}</p>
-    <br><a href="/logout">Sair</a>
-  `)
-})
+// // Perfil do usuário
+// app.get('/perfil', async (req, res) => {
+//   if (!req.user) return res.redirect('/')
+//   res.send(`
+//     <h1>Bem-vindo, ${req.user.nome}</h1>
+//     <p>Email: ${req.user.email}</p>
+//     <br><a href="/logout">Sair</a>
+//   `)
+// })
 
-// Logout
-app.get('/logout', (req, res) => {
-  req.logout(() => res.redirect('/'))
-})
+// // Logout
+// app.get('/logout', (req, res) => {
+//   req.logout(() => res.redirect('/'))
+// })
 
 
 
@@ -213,7 +214,7 @@ app.get('/logout', (req, res) => {
 
 
 
-app.post('/v1/controle-usuario/solicitacao-de-senha',bodyParserJSON, async function(request, response){
+app.post('/v1/teajuda/solicitacao-de-senha',bodyParserJSON, async function(request, response){
    let contentType = request.headers['content-type']
    let dadosBody = request.body
 
@@ -224,7 +225,7 @@ app.post('/v1/controle-usuario/solicitacao-de-senha',bodyParserJSON, async funct
 
 })
 
-app.post('/v1/controle-usuario/validar-token', bodyParserJSON, async (request, response) => {
+app.post('/v1/teajuda/validar-token', bodyParserJSON, async (request, response) => {
     let contentType = request.headers['content-type']
     let dadosBody = request.body
 

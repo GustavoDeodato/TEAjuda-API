@@ -6,10 +6,11 @@
  * ********************************************** */
 const message = require('../../modulo/config.js')
 const usuariosDAO = require('../../model/DAO/usuario.js')
-const bcrypt = require('bcryptjs'); 
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 
-const inserirUsuario = async function (usuario) {
+const inserirUsuario = async function (contentType, usuario) {
     
     const saltRounds = 12
     if(String(contentType).toLowerCase() === 'application/json'){
@@ -21,32 +22,32 @@ const inserirUsuario = async function (usuario) {
             return message.ERROR_REQUIRED_FIELDS//400
     }else{
         try {
-            // 1. **CRIAÇÃO DO HASH SEGURO**
             // A função hash do bcrypt gera o salt internamente e então faz o hash da senha
             // com o número de rounds especificado (saltRounds).
-            const senhaHash = await bcrypt.hash(usuario.senha, saltRounds); 
-    
-            // 2. **CRIAÇÃO DO OBJETO PARA SALVAR**
-            const novoUsuario = {
+            let senhaHash = await bcrypt.hash(usuario.senha, saltRounds)
+            console.log(senhaHash)
+
+            let arrayUsuario = {
                 nome: usuario.nome,
                 email: usuario.email,
-                // **SUBSTITUIÇÃO SEGURA:** A senha original é substituída pelo hash
+                // senha original é substituída pelo hash
                 senha: senhaHash 
-            };
-    
-            // 3. **SALVAMENTO NO BANCO DE DADOS**
-            const resultado = await usuariosDAO.insertUsuario(novoUsuario);
-    
-            // 4. **RESPOSTA APROPRIADA**
+            }
+            console.log(arrayUsuario)
+
+
+            let resultado = await usuariosDAO.insertUsuario(arrayUsuario)
+            console.log(resultado)
+
+
             if (resultado) {
-                // Status 201 Created é o padrão para criação bem-sucedida de um novo recurso
                 return message.SUCESS_CREATED_ITEM
             } else {
-                // Em caso de falha do DAO (ex: falha na conexão com o DB)
                 return message.ERROR_INTERNAL_SERVER_MODEL
             }
     
         } catch (error) {
+            console.error("deu ruim fi", error)
             return message.ERROR_INTERNAL_SERVER_CONTROLLER
                
         }
@@ -200,9 +201,16 @@ const LoginUsuario = async function (usuario){
     if (!senhaValida) {
         return message.ERROR_REQUIRED_FIELDS
     }
+    const token = jwt.sign(
+            {
+                id: resultUsuario.id_usuario,
+                email: resultUsuario.email,
+                perfil: resultUsuario.perfil
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
+    )
 
-    // 3. Sucesso: Geração do JWT (Token)
-    // ... (Lógica de JWT aqui)
 
     return 
     }else{
