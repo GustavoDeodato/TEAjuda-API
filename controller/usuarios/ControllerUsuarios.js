@@ -63,19 +63,19 @@ const atualizarUsuario = async function(usuario, id, contentType){
             console.log('Content-Type recebido:', contentType)
 
             if (
-                !id || isNaN(id) || id <= 0 || // <<< validação do ID
+                !id || isNaN(id) || id <= 0 || 
                 usuario.nome == '' || usuario.nome == null || usuario.nome == undefined || usuario.nome.length > 100 ||
                 usuario.email == '' || usuario.email == null || usuario.email == undefined || usuario.email.length > 100  ||
                 usuario.senha == '' || usuario.senha == null || usuario.senha == undefined || usuario.senha.length > 100
-                // !usuario.data_expiracao || 
-                // usuario.expirado !== true && usuario.expirado !== false 
+         
             ) {
                 return message.ERROR_REQUIRED_FIELDS //400
             } else {
                 //verifica se o ID existe no BD
                 let result = await usuariosDAO.selectByIdUsuario(id)
+                console.log(result)
                 if(!result){
-                    return message.ERROR_NOT_FOUND; //404
+                    return message.ERROR_NOT_FOUND //404
                 }
 
                 let resultUsuario = await usuariosDAO.updateUsuario(usuario, id)
@@ -108,13 +108,18 @@ const listarUsuario = async function(){
                 dadosUsuarios.items = resultUsuarios.length
                 dadosUsuarios.users =  resultUsuarios
 
+                console.log(dadosUsuarios)
+
                 return dadosUsuarios
             }else{
+
                 return message.ERROR_NOT_FOUND
             }
+            
         }
         return message.ERROR_INTERNAL_SERVER_MODEL
     } catch (error) {
+        console.log(error)
         return message.ERROR_INTERNAL_SERVER_CONTROLLER
     }
 }

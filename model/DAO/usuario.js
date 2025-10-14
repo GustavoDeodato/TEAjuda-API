@@ -15,7 +15,7 @@ const prisma = new PrismaClient()
 //Função para inserir novas usuarios
 const insertUsuario = async function (usuario){
     try {
-        let result = await prisma.usuario.create({
+        let result = await prisma.tbl_usuario.create({
             data: {
                 nome: usuario.nome,
                 email: usuario.email,
@@ -34,13 +34,15 @@ const insertUsuario = async function (usuario){
     }
 }
 //Função para atualizar uma usuario existente 
-const updateUsuario = async function (usuario){
+const updateUsuario = async function (usuario, id){
+    console.log(usuario)
     try {
+    
         let sql = `update tbl_usuario set 
                     nome = '${usuario.nome}',
                     email = '${usuario.email}',
                     senha = '${usuario.senha}'
-        where id = ${usuario.id}`
+        where id = ${id}`
 
         let result = await prisma.$executeRawUnsafe(sql)
 
@@ -50,20 +52,22 @@ const updateUsuario = async function (usuario){
             return false 
         
     } catch (error) {
+        console.error(error)
         return false 
     }
 }
 //função para deletar uma usuario 
 const deleteUsuario = async function (id){
     try {
-
-        result = await prisma.$executeRaw`CALL delete_usuario_id (${id});`
+        
+       let result = await prisma.$executeRaw`CALL delete_usuario_id (${id});`
 
         if(result)
             return result
         else 
         return false 
     } catch (error) {
+        console.error(error)
         return false 
     }
 
@@ -71,9 +75,7 @@ const deleteUsuario = async function (id){
 //função para mostrar todas as usuarios 
 const selectAllUsuario = async function (){
     try {
-        let sql = `select * from tbl_usuario`
-        let result = await prisma.$queryRaw(sql)
-
+        let result = await prisma.$queryRaw`SELECT * FROM tbl_usuario`
 
         if(result)
             return result
