@@ -186,48 +186,71 @@ const excluirUsuario = async function(id){
 }
 
 
-const LoginUsuario = async function (usuario){
-  try {
-    const { email, senha } = usuario
+const LoginUsuario = async function (contentType, usuario){
+    try {
+        let { email, senha } = usuario; // Desestruturação no topo
 
-    if(String(contentType).toLowerCase() === 'application/json'){
-        if(usuario.email == '' || usuario.email == null || usuario.email == undefined || usuario.email.length > 100){
-            message.ERROR_REQUIRED_FIELDS
+        // 1. Content-Type (Atenção: use .includes para mais robustez!)
+        if(!String(contentType).toLowerCase().includes('application/json')){
+            return message.ERROR_CONTENT_TYPE; // Deve ter status_code: 415
         }
-    const result = await usuariosDAO.SelectLoginUsuario(email)
+        
+        // 2. Validação de Campos
+        if (!email || !senha || String(email).length > 100 || String(senha).length > 255) {
+            return message.ERROR_REQUIRED_FIELDS; // Deve ter status_code: 400
+        }
 
-    if (!result) {
-        return message.ERROR_REQUIRED_FIELDS
-    }
+        // 3. Busca no DAO
+        let result = await usuariosDAO.SelectLoginUsuario(email);
+        
+        // 4. Usuário não encontrado (Use mensagem de credencial inválida por segurança)
+        if (!result) {
+            return message.ERROR_INVALID_CREDENTIALS; // Deve ter status_code: 401
+        }
+        
+        // 5. ACESSO AO HASH: Usando o nome da coluna que você confirmou (result.senha)
+        let hashDoBanco = result.senha; 
 
-    // 2. Compara a senha (AQUI ESTÁ A CHAVE DA SEGURANÇA)
-    const senhaValida = await bcrypt.compare(senha, result.senha_hash)
+        if (!hashDoBanco) {
+            console.error("ERRO: Hash de senha nulo ou inválido para o usuário:", email);
+            return message.ERROR_INTERNAL_SERVER_CONTROLLER; // Deve ter status_code: 500
+        }
 
-    if (!senhaValida) {
-        return message.ERROR_REQUIRED_FIELDS
-    }
-    const token = jwt.sign(
+        // 6. Compara a senha
+        let senhaValida = await bcrypt.compare(senha, hashDoBanco)
+
+        if (!senhaValida) {
+            // Credencial Inválida
+            return message.ERROR_INVALID_CREDENTIALS; // Deve ter status_code: 401
+        }
+        
+        // 7. Geração do Token
+        const token = jwt.sign(
             {
-                id: resultUsuario.id_usuario,
-                email: resultUsuario.email,
-                perfil: resultUsuario.perfil
+                id: result.id_usuario, 
+                email: result.email,
+                perfil: result.perfil
             },
             process.env.JWT_SECRET,
             { expiresIn: "1h" }
-    )
+        );
 
+        // 8. Retorno de SUCESSO com a chave 'status_code'
+        return {
+            status_code: 200, // <--- CORREÇÃO AQUI
+            token: token,
+            data: {
+                id: result.id_usuario,
+                email: result.email,
+                perfil: result.perfil
+            }
+        };
 
-    return 
-    }else{
-        message.ERROR_CONTENT_TYPE//415
+    } catch (error) {
+        console.error("Erro no Controller de Login:", error);
+        return message.ERROR_INTERNAL_SERVER_CONTROLLER; // Deve ter status_code: 500
     }
-
-
-  } catch (error) {
-        message.ERROR_INTERNAL_SERVER_CONTROLLER//500
-  }
 }
-
 
 module.exports = {
     inserirUsuario,

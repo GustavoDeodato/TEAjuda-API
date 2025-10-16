@@ -32,7 +32,6 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 
-const authRoutes = require('./routes/authRoutes.js')
 const controllerUsuarios = require ('./controller/usuarios/ControllerUsuarios.js')
 const ControllerRedefinir = require('./controller/redefinirSenha/ControllerRedefinirSenha.js')
 
@@ -119,10 +118,11 @@ app.delete('/v1/teajuda/usuario/:id', async function (request, response) {
 })
 
 //endpoint de login 
-app.post('v1/teajuda/usuario/login', async function(request, response){
+app.post('/v1/teajuda/usuario/login', cors(), bodyParserJSON, async function(request, response){
 
-    let {email, nome} = request.body
-    let resultUsuario = await controllerUsuarios.LoginUsuario({email, nome})
+    let contentType = request.headers['content-type']
+    let dadosBody = request.body
+    let resultUsuario = await controllerUsuarios.LoginUsuario( contentType, dadosBody)
 
     response.status(resultUsuario.status_code)
     response.json(resultUsuario)
