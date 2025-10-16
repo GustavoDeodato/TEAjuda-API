@@ -9,6 +9,26 @@ const enviarEmail = async (to, token) => {
         },
     });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
     await transporter.sendMail({
         from: `"Suporte TEAjuda" <${process.env.EMAIL_USER}>`,
         to,
@@ -16,5 +36,6 @@ const enviarEmail = async (to, token) => {
         text: `Olá! Seu token de recuperação é: ${token}\n\nEle é válido por 15 minutos.`,
     });
 };
+
 
 module.exports = { enviarEmail };

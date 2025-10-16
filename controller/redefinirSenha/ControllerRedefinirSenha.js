@@ -39,18 +39,17 @@ const solicitarRedefinicao = async function (email, contentType) {
         let usado = 0
 
         let resultToken = await redefinirSenhaDAO.insertRedefinicao(token, usado, resultUsuario.email)
-
+        console.log(resultToken)
         if (resultToken) {
             // Envia o e-mail com o token
             await enviarEmail(resultUsuario.email, token)
-
+            console.log(enviarEmail)
             return message.SUCESS_CREATED_ITEM // 201
         } else {
             return message.ERROR_INTERNAL_SERVER_MODEL // 500
         }
 
     } catch (error) {
-        console.error("Erro no controller solicitarRedefinicao:", error)
         return message.ERROR_INTERNAL_SERVER_CONTROLLER // 500
     }
 }

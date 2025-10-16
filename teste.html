@@ -1,0 +1,143 @@
+
+    <!DOCTYPE html>
+    <html lang="pt-br">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Redefinição de Senha - TEAjuda</title>
+      <style>
+        body {
+          font-family: 'Segoe UI', Roboto, sans-serif;
+          background-color: #f4f6fa;
+          margin: 0;
+          padding: 0;
+        }
+  
+        .container {
+          max-width: 600px;
+          background: #ffffff;
+          margin: 40px auto;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+  
+        .header {
+          background-color: #1b6ca8;
+          color: #fff;
+          padding: 24px;
+          text-align: center;
+        }
+  
+        .header img {
+          width: 70px;
+          margin-bottom: 10px;
+        }
+  
+        .content {
+          padding: 32px;
+          color: #333;
+        }
+  
+        h2 {
+          color: #1b6ca8;
+          margin-top: 0;
+        }
+  
+        p {
+          font-size: 15px;
+          line-height: 1.6;
+        }
+  
+        .token {
+          display: inline-block;
+          background-color: #e8f1fa;
+          border: 2px solid #1b6ca8;
+          border-radius: 8px;
+          color: #1b6ca8;
+          font-size: 20px;
+          font-weight: bold;
+          padding: 12px 24px;
+          letter-spacing: 2px;
+          margin: 20px 0;
+        }
+  
+        .footer {
+          text-align: center;
+          font-size: 13px;
+          color: #777;
+          padding: 16px;
+          background: #f8f9fb;
+        }
+      </style>
+    </head>
+  
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="" alt="Logo TEAjuda" />
+          <h1>TEAjuda</h1>
+        </div>
+  
+        <div class="content">
+          <h2>Redefinição de Senha</h2>
+          <p>Olá <strong>{{NOME_USUARIO}}</strong>,</p>
+  
+          <p>Recebemos uma solicitação para redefinir sua senha. Utilize o código abaixo para prosseguir com o processo:</p>
+  
+          <div class="token">{{TOKEN}}</div>
+  
+          <p>Este código é válido por <strong>15 minutos</strong>. Caso você não tenha solicitado essa redefinição, ignore este e-mail com segurança.</p>
+  
+          <p>Atenciosamente,<br>
+          <strong>Equipe TEAjuda</strong></p>
+        </div>
+  
+        <div class="footer">
+          © 2025 TEAjuda — Todos os direitos reservados.<br>
+          Este é um e-mail automático. Não responda.
+        </div>
+      </div>
+    </body>
+    </html>
+    <!-- `
+  
+    // 🔹 Substitui os placeholders com os valores reais
+    const htmlEmail = htmlTemplate
+      .replace('{{nome_usuario}}', usuario)
+      .replace('{{token}}', token)
+  
+    const text = `
+  TEAjuda — Redefinição de Senha
+  
+  Olá, ${usuario},
+  
+  Recebemos uma solicitação para redefinir sua senha.
+  
+  Código: ${token}
+  
+  O código é válido por 15 minutos.
+  
+  Se você não solicitou isso, ignore este e-mail.
+  
+  — Equipe TEAjuda
+    `
+  
+    // 🔹 Configuração do e-mail (mailOptions)
+    const mailOptions = {
+      from: `"Equipe TEAjuda" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Código de Redefinição de Senha - TEAjuda',
+      text: text,
+      html: htmlEmail
+    }
+  
+    try {
+      await transporter.sendMail(mailOptions)
+      console.log(`✅ E-mail de redefinição enviado para: ${email}`)
+      return true
+    } catch (error) {
+      console.error('❌ Erro ao enviar e-mail:', error)
+      return false
+    }
+  } -->
