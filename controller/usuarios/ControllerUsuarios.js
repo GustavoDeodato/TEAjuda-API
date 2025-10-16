@@ -47,7 +47,6 @@ const inserirUsuario = async function (contentType, usuario) {
             }
     
         } catch (error) {
-            console.error("deu ruim fi", error)
             return message.ERROR_INTERNAL_SERVER_CONTROLLER
                
         }

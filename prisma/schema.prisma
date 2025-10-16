@@ -15,3 +15,10 @@ model tbl_usuario {
 
   @@map("tbl_usuario")
 }
+
+model tbl_recsenha {
+  id    Int     @id @default(autoincrement())
+  token Int
+  usado Boolean
+  email String  @db.VarChar(100)
+}

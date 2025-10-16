@@ -20,12 +20,14 @@ const solicitarRedefinicao = async function (email, contentType) {
         if (contentType !== 'application/json') {
             return message.ERROR_CONTENT_TYPE // 415
         }
+        email = email.email
 
         if (!email || email === '') {
             return message.ERROR_REQUIRED_FIELDS // 400
         }
 
-        let resultUsuario = await usuariosDAO.selectByEmailUsuario(email)
+        let resultUsuario = await usuariosDAO.SelectLoginUsuario(email)
+        console.log(resultUsuario)
         if (!resultUsuario) {
             return message.ERROR_NOT_FOUND // 404
         }
@@ -36,7 +38,7 @@ const solicitarRedefinicao = async function (email, contentType) {
         // Define o token como não usado (0)
         let usado = 0
 
-        let resultToken = await redefinirSenhaDAO.insertRedefinicao(resultUsuario.id, token, usado)
+        let resultToken = await redefinirSenhaDAO.insertRedefinicao(token, usado, resultUsuario.email)
 
         if (resultToken) {
             // Envia o e-mail com o token

@@ -11,22 +11,22 @@ const prisma = new PrismaClient()
 
 
 //insert
-const insertRedefinicao = async function (id, token, usado) {
+const insertRedefinicao = async function (token, usado, email) {
     try {
         let sql = `
-        insert into tbl_recSenha (id, token, usado)
+        insert into tbl_recSenha (token, usado, email)
         values (
-            ${id}, 
-            '${token}', 
-            ${usado}
+            ${token}, 
+            ${usado}, 
+            '${email}'
         );
         `
-
+        console.log(sql)
         let result = await prisma.$executeRawUnsafe(sql)
-
+        console.log(result)
         if (result) {
             let sqlSelect = `
-            select * from tbl_recSenha where id = ${id} limit 1;
+            select * from tbl_recSenha where email = ${email} limit = 1;
             `
 
             let criacaoRegistro = await prisma.$queryRawUnsafe(sqlSelect)
@@ -40,7 +40,6 @@ const insertRedefinicao = async function (id, token, usado) {
             return false
         }
     } catch (error) {
-        console.log('Erro insertRedefinicao:', error)
         return false
     }
 }
