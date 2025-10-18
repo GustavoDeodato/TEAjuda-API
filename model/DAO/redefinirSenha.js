@@ -49,13 +49,14 @@ const insertRedefinicao = async function (token, usado, email) {
 const selectByToken = async function(token){
     try {
         let sql = `
-        select * from tbl_redefinirSenha where token = '${token}' and usado = false order by criacao desc limit 1;
+        select * from tbl_RecSenha where token = ${token} and usado = false 
+        and DATE_ADD(data_criacao, INTERVAL 60 MINUTE) > NOW()
+        order by data_criacao desc limit 1;
         `
-
         let result = await prisma.$queryRawUnsafe(sql)
         return result && result.length > 0 ? result[0] : false
     } catch (error) {
-        console.error("error ao selecionar por token ", error)
+        console.error("error ao procurar token", error)
         return false
     }
 }
@@ -81,7 +82,7 @@ const updateStatusUsado = async function(id){
     }
 }
 
-const senhaAtualizada = async function (email, novaSenha ) {
+const updateSenha = async function (email, novaSenha ) {
     try {
 
         let sql = ` update tbl_usuario set senha = '${novaSenha}'  where id = ${email}
@@ -103,5 +104,5 @@ module.exports = {
    insertRedefinicao,
    selectByToken,
    updateStatusUsado,
-   senhaAtualizada
+   updateSenha
 }

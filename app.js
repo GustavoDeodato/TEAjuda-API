@@ -213,27 +213,42 @@ app.post('/v1/teajuda/usuario/login', cors(), bodyParserJSON, async function(req
 /////////////////////////////////////////////////// RECUPERAR SENHA ///////////////////////////////////////////////////////
 
 
-
+//solicitar recuperação e enviar email 
 app.post('/v1/teajuda/solicitacao-de-senha',bodyParserJSON, async function(request, response){
    let contentType = request.headers['content-type']
    let dadosBody = request.body
 
-   let resultRedefinicao = await ControllerRedefinir.solicitarRedefinicao(dadosBody, contentType)
+   let resultSolicitacao = await ControllerRedefinir.solicitarRedefinicao(dadosBody, contentType)
 
-   response.status(resultRedefinicao.status_code || 200)
-   response.json(resultRedefinicao)
+   response.status(resultSolicitacao.status_code || 200)
+   response.json(resultSolicitacao)
 
 })
-
+//validação do token 
 app.post('/v1/teajuda/validar-token', bodyParserJSON, async (request, response) => {
     let contentType = request.headers['content-type']
     let dadosBody = request.body
 
-    let resultToken = await ControllerRedefinir.validarToken(dadosBody, contentType)
+    let resultToken = await ControllerRedefinir.validarToken(contentType, dadosBody)
 
     response.status(resultToken.status_code || 200)
     response.json(resultToken)
 })
+
+//End-point para redefinir a senha 
+//by: Gustavo Deodato
+app.post('/v1/teajuda/redefinir-senha', cors(), bodyParserJSON, async function(request, response){
+    let contentType = request.headers['content-type']
+    let dadosBody = request.body 
+
+    let resultRedefinicao = await ControllerRedefinir.redefinirSenha(dadosBody, contentType)
+
+    response.status(resultRedefinicao.status_code)
+    response.json(resultRedefinicao)
+
+    
+})
+
 
 app.listen(8080, function () {
     console.log('API aguardando requisições...')

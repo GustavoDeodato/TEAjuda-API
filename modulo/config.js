@@ -36,7 +36,7 @@ const SUCCESS_RECOVERT_EMAIL_SENT = { status: true, status_code: 200, message: '
 
 const SUCCESS_PASSWORD_RESET = { status: true, status_code: 200, message: 'Senha resetada com sucesso!'}
 
-
+const SUCESS_VALID_TOKEN = { status: true, status_code: 200, message: 'Token validado com sucesso!' }
 module.exports = {
     ERROR_REQUIRED_FIELDS,
     ERROR_INTERNAL_SERVER_CONTROLLER,
@@ -50,5 +50,6 @@ module.exports = {
     SUCESS_UPDATE_ITEM,
     SUCCESS_LOGIN,
     SUCCESS_RECOVERT_EMAIL_SENT,
-    SUCCESS_PASSWORD_RESET
+    SUCCESS_PASSWORD_RESET,
+    SUCESS_VALID_TOKEN
 }

@@ -1,14 +1,12 @@
 /*********************************************
  * Objetivo:Controller responsavel pela regra de negocio da recuperação de senha
- * Data: 30/09/2025
- * Autor: Beatriz Rodrigues
- * Versão 1.0
+ * Data: 10/10/2025
+ * Autor: Gustavo Deodato
+ * Versão 2.0
  * ***********************************************/
 
-//import do status_code
 const message = require('../../modulo/config.js')
 
-//import do DAO para realizar o CRUD no bd
 const redefinirSenhaDAO = require('../../model/DAO/redefinirSenha.js')
 const usuariosDAO = require('../../model/DAO/usuario.js')
 const bcrypt = require('bcrypt')
@@ -56,34 +54,37 @@ const solicitarRedefinicao = async function (email, contentType) {
 
 
 //função valida o token
-const validarToken = async function(token, contentType){
+const validarToken = async function (contentType, dados) {
     try {
-        if(contentType == 'application/json'){
+        console.log(contentType)
+        if (contentType !== 'application/json') {
             return message.ERROR_CONTENT_TYPE
         }
 
-        if(!token || token === ''){
+        let token = parseInt(dados?.token)
+
+        if (isNaN(token) || token <= 0) {
             return message.ERROR_REQUIRED_FIELDS
         }
 
-        let resultToken = await usuariosDAO.updateStatusExpirado(token)
-        if(!resultToken){
-            return message.ERROR_INVALID_CODE
-        }
+        let resultToken = await redefinirSenhaDAO.selectByToken(token)
 
-        if(new Date(resultToken.expiracao) < new Date()){
-            return message.ERROR_CODE_EXPIRED
+        if (!resultToken) {
+            return message.ERROR_INVALID_CODE;
         }
-
-        return{ status: true, status_code: 200, message: 'Token validado com sucesso!' }
-    
+        
+        return message.SUCESS_VALID_TOKEN
+        
     } catch (error) {
         console.log("ERRO AO VALIDAR O CODIGO", error)
-        return message.ERROR_CODE_EXPIRED
-}
+        
+        return message.ERROR_INTERNAL_SERVER_CONTROLLER
+    }
 }
 
-const redefinirSenha = async function(dados,  contentType){
+
+const redefinirSenha = async function(dados, contentType){
+    console.log(contentType)
     try {
         if(contentType !== 'application/json'){
             return message.ERROR_CONTENT_TYPE
@@ -94,16 +95,14 @@ const redefinirSenha = async function(dados,  contentType){
         }
 
         let registro = await redefinirSenhaDAO.selectByToken(dados.token)
+        console.log(registro)
         if(!registro){
             return message.ERROR_INVALID_CODE
         }
 
-        if(new Date(registro.usado) < new Date()){
-            return message.ERROR_CODE_EXPIRED
-        }
-
         let senha = await bcrypt.hash(dados.novaSenha, 10)
-        let resultUpdate = await redefinirSenhaDAO.senhaAtualizada(registro.id, senha)
+        let resultUpdate = await redefinirSenhaDAO.updateSenha(registro.id, senha)
+        console.log(resultUpdate)
 
         if(resultUpdate){
             await redefinirSenhaDAO.updateStatusUsado(registro.id)
