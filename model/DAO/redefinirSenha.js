@@ -26,7 +26,7 @@ const insertRedefinicao = async function (token, usado, email) {
         console.log(result)
         if (result) {
             let sqlSelect = `
-            select * from tbl_recSenha where email = ${email} limit = 1;
+            select * from tbl_recSenha where email = '${email}' limit 1;
             `
 
             let criacaoRegistro = await prisma.$queryRawUnsafe(sqlSelect)
