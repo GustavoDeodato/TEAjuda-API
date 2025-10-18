@@ -1,6 +1,7 @@
 📖 API TEAjuda
 
 O que é a TEAjuda?
+
 TEAjuda é um projeto com o intuito de auxiliar cuidadores de individuos TEA, para o controle e registro geral de suas rotinas.
 
 🎯 Descrição Geral
@@ -34,6 +35,7 @@ ou
 http://localhost:8080/v1/teajuda
 
 🚀 Documentação dos Endpoints
+
 
 
 
