@@ -5,7 +5,7 @@ use db_teajuda_aa;
 create table tbl_usuario(
 id int not null primary key auto_increment,
 nome varchar(100) not null,
-email varchar(100) not null,
+email varchar(255) not null,
 senha varchar(100) not null
 
 );
@@ -15,7 +15,7 @@ create table tbl_RecSenha(
     token int not null,
     usado boolean not null,
     email varchar(100) not null 
-    
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 insert into tbl_usuario(nome, email, senha) values(
