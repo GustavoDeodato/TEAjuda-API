@@ -14,7 +14,7 @@ create table tbl_RecSenha(
 	id int not null primary key auto_increment,
     token int not null,
     usado boolean not null,
-    email varchar(100) not null 
+    email varchar(100) not null,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -83,7 +83,6 @@ DELIMITER ;
 --criação das view 
 
 CREATE VIEW vw_usuarios AS
-SELECT *
-FROM tbl_usuario;
+SELECT * FROM tbl_usuario;
 
 SELECT * FROM vw_usuarios;

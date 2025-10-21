@@ -191,6 +191,7 @@ const LoginUsuario = async function (contentType, usuario){
 
         // 1. Content-Type (Atenção: use .includes para mais robustez!)
         if(!String(contentType).toLowerCase().includes('application/json')){
+            // console.log("Content-Type recebido:", contentType);
             return message.ERROR_CONTENT_TYPE; // Deve ter status_code: 415
         }
         
@@ -200,11 +201,12 @@ const LoginUsuario = async function (contentType, usuario){
         }
 
         // 3. Busca no DAO
-        let result = await usuariosDAO.SelectLoginUsuario(email);
+        let resultArray = await usuariosDAO.SelectLoginUsuario(email);
+        // let result = resultArray[0];
         
         // 4. Usuário não encontrado (Use mensagem de credencial inválida por segurança)
         if (!result) {
-            return message.ERROR_INVALID_CREDENTIALS; // Deve ter status_code: 401
+            return message.ERROR_REQUIRED_FIELDS; // Deve ter status_code: 401
         }
         
         // 5. ACESSO AO HASH: Usando o nome da coluna que você confirmou (result.senha)
@@ -220,7 +222,7 @@ const LoginUsuario = async function (contentType, usuario){
 
         if (!senhaValida) {
             // Credencial Inválida
-            return message.ERROR_INVALID_CREDENTIALS; // Deve ter status_code: 401
+            return message.ERROR_REQUIRED_FIELDS; // Deve ter status_code: 401
         }
         
         // 7. Geração do Token

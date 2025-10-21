@@ -6,7 +6,7 @@
  * ********************************************** */
 
 //import biblioteca prisma client para realizar as ações do db
-const {PrismaClient} = require('@prisma/client')
+const { PrismaClient } = require('@prisma/client')
 
 //Instancia da classe do prisma client (cria um objeto)
 const prisma = new PrismaClient()

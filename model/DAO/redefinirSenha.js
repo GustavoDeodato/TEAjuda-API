@@ -16,8 +16,8 @@ const insertRedefinicao = async function (token, usado, email) {
         let sql = `
         insert into tbl_recSenha (token, usado, email)
         values (
-            ${token}, 
-            ${usado}, 
+            '${token}', 
+             ${usado}, 
             '${email}'
         );
         `
@@ -82,10 +82,10 @@ const updateStatusUsado = async function(id){
     }
 }
 
-const updateSenha = async function (email, novaSenha ) {
+const updateSenha = async function (id, novaSenha ) {
     try {
 
-        let sql = ` update tbl_usuario set senha = '${novaSenha}'  where id = ${email}
+        let sql = ` update tbl_usuario set senha = '${novaSenha}'  where id = ${id}
         `
 
         let result = await prisma.$executeRawUnsafe(sql)
