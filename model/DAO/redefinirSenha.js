@@ -82,15 +82,10 @@ const updateStatusUsado = async function(id){
 
 const updateSenha = async function (id, novaSenha ) {
     try {
-        console.log('=== UPDATE SENHA ===')
-        console.log('ID do usuário:', id)
-        console.log('Hash da nova senha (primeiros 20 chars):', novaSenha ? novaSenha.substring(0, 20) + '...' : 'null')
-
+        
         let sql = `UPDATE tbl_usuario SET senha = '${novaSenha}' WHERE id = ${id}`
-        console.log('SQL:', sql)
 
         let result = await prisma.$executeRawUnsafe(sql)
-        console.log('Linhas afetadas:', result)
 
         if(result){
             return true

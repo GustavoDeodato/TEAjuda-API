@@ -200,7 +200,6 @@ const LoginUsuario = async function (contentType, usuario){
         let result = await usuariosDAO.SelectLoginUsuario(email)
         
         if (!result) {
-            console.log('Erro: Usuário não encontrado')
             return message.ERROR_REQUIRED_FIELDS
         }
         
@@ -213,7 +212,6 @@ const LoginUsuario = async function (contentType, usuario){
         let senhaValida = await bcrypt.compare(senha, hashDoBanco)
 
         if (!senhaValida) {
-            console.log('Erro: Senha inválida')
             return message.ERROR_REQUIRED_FIELDS
         }
         

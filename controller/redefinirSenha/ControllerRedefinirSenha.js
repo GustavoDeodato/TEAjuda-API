@@ -83,54 +83,39 @@ const validarToken = async function (contentType, dados) {
 
 
 const redefinirSenha = async function(dados, contentType){
-    console.log('=== REDEFINIR SENHA ===')
-    console.log('Content-Type:', contentType)
-    console.log('Dados recebidos:', dados)
-    
+ 
     try {
         if(contentType !== 'application/json'){
-            console.log('Erro: Content-Type inválido')
             return message.ERROR_CONTENT_TYPE
         }
 
         if(!dados.token || !dados.novaSenha){
-            console.log('Erro: Token ou novaSenha ausentes')
-            console.log('Token:', dados.token)
-            console.log('NovaSenha:', dados.novaSenha ? '***' : 'undefined')
+          
             return message.ERROR_REQUIRED_FIELDS
         }
 
         let registro = await redefinirSenhaDAO.selectByToken(dados.token)
-        console.log('Registro encontrado:', registro)
         if(!registro){
-            console.log('Erro: Token inválido ou expirado')
             return message.ERROR_INVALID_CODE
         }
 
         // Busca o usuário pelo email do registro
         let usuario = await usuariosDAO.SelectLoginUsuario(registro.email)
-        console.log('Usuário encontrado:', usuario ? { id: usuario.id, email: usuario.email } : null)
         if(!usuario){
-            console.log('Erro: Usuário não encontrado')
             return message.ERROR_NOT_FOUND
         }
 
         let senha = await bcrypt.hash(dados.novaSenha, 12)
-        console.log('Hash gerado com sucesso')
         
         let resultUpdate = await redefinirSenhaDAO.updateSenha(usuario.id, senha)
-        console.log('Resultado do update:', resultUpdate)
 
         if(resultUpdate){
             await redefinirSenhaDAO.updateStatusUsado(registro.id)
-            console.log('Senha redefinida com sucesso!')
             return message.SUCCESS_PASSWORD_RESET
         }else{
-            console.log('Erro: Falha ao atualizar senha no banco')
             return message.ERROR_INTERNAL_SERVER_MODEL
         }
     } catch (error) {
-        console.error('Erro ao redefinir senha:', error)
         return message.ERROR_INTERNAL_SERVER_CONTROLLER
     }
 }
