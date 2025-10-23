@@ -22,7 +22,7 @@ Controller: Responsável por receber os dados da rota, validar os parâmetros, e
 Lógica de Negócio (Service/Model): Camada onde as regras de negócio e a comunicação com o banco de dados (DAO) são executadas, garantindo a integridade dos dados.
 
 🔗 URL Base
-Todos os endpoints utilizam a seguinte URL base (o host deve ser definido na implantação, ex: http://localhost:3000):
+Todos os endpoints utilizam a seguinte URL base (o host deve ser definido na implantação, ex: http://localhost:8080):
 
 [HOST]/v1/controle-usuario
 
@@ -315,3 +315,4 @@ Resposta Esperada (Exemplo de Sucesso - 200):
 }
 
 Observação sobre o Login: Este endpoint está utilizando nome e email como parâmetros de rota. Para ambientes de produção, geralmente é mais seguro usar Headers de Autorização ou um Corpo de Requisição (Body) para transmitir credenciais.
+
