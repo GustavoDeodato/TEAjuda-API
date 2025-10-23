@@ -187,56 +187,36 @@ const excluirUsuario = async function(id){
 
 const LoginUsuario = async function (contentType, usuario){
     try {
-        let { email, senha } = usuario; // Desestruturação no topo
-        
-        console.log('=== LOGIN ===')
-        console.log('Email:', email)
-        console.log('Senha recebida:', senha ? '***' : 'undefined')
+        let { email, senha } = usuario
 
-        // 1. Content-Type (Atenção: use .includes para mais robustez!)
         if(!String(contentType).toLowerCase().includes('application/json')){
-            console.log('Erro: Content-Type inválido')
-            return message.ERROR_CONTENT_TYPE; // Deve ter status_code: 415
+            return message.ERROR_CONTENT_TYPE
         }
         
-        // 2. Validação de Campos
         if (!email || !senha || String(email).length > 100 || String(senha).length > 255) {
-            console.log('Erro: Validação de campos falhou')
-            console.log('Email válido:', !!email && String(email).length <= 100)
-            console.log('Senha válida:', !!senha && String(senha).length <= 255)
-            return message.ERROR_REQUIRED_FIELDS; // Deve ter status_code: 400
+            return message.ERROR_REQUIRED_FIELDS
         }
 
-        // 3. Busca no DAO (já retorna o objeto diretamente, não um array)
-        let result = await usuariosDAO.SelectLoginUsuario(email);
-        console.log('Usuário encontrado:', result ? { id: result.id, email: result.email } : null)
+        let result = await usuariosDAO.SelectLoginUsuario(email)
         
-        // 4. Usuário não encontrado (Use mensagem de credencial inválida por segurança)
         if (!result) {
             console.log('Erro: Usuário não encontrado')
-            return message.ERROR_REQUIRED_FIELDS; // Deve ter status_code: 401
+            return message.ERROR_REQUIRED_FIELDS
         }
         
-        // 5. ACESSO AO HASH: Usando o nome da coluna que você confirmou (result.senha)
-        let hashDoBanco = result.senha; 
-        console.log('Hash do banco (primeiros 20 chars):', hashDoBanco ? hashDoBanco.substring(0, 20) + '...' : 'null')
+        let hashDoBanco = result.senha
 
         if (!hashDoBanco) {
-            console.error("ERRO: Hash de senha nulo ou inválido para o usuário:", email);
-            return message.ERROR_INTERNAL_SERVER_CONTROLLER; // Deve ter status_code: 500
+            return message.ERROR_INTERNAL_SERVER_CONTROLLER
         }
 
-        // 6. Compara a senha
-        console.log('Comparando senha...')
         let senhaValida = await bcrypt.compare(senha, hashDoBanco)
-        console.log('Senha válida:', senhaValida)
 
         if (!senhaValida) {
             console.log('Erro: Senha inválida')
-            return message.ERROR_REQUIRED_FIELDS; // Deve ter status_code: 401
+            return message.ERROR_REQUIRED_FIELDS
         }
         
-        // 7. Geração do Token
         const token = jwt.sign(
             {
                 id: result.id, 
@@ -245,11 +225,9 @@ const LoginUsuario = async function (contentType, usuario){
             },
             process.env.JWT_SECRET,
             { expiresIn: "1h" }
-        );
+        )
 
-        console.log('Login realizado com sucesso!')
         
-        // 8. Retorno de SUCESSO com a chave 'status_code'
         return {
             status_code: 200,
             token: token,
@@ -258,11 +236,10 @@ const LoginUsuario = async function (contentType, usuario){
                 nome: result.nome,
                 email: result.email
             }
-        };
+        }
 
     } catch (error) {
-        console.error("Erro no Controller de Login:", error);
-        return message.ERROR_INTERNAL_SERVER_CONTROLLER; // Deve ter status_code: 500
+        return message.ERROR_INTERNAL_SERVER_CONTROLLER
     }
 }
 
