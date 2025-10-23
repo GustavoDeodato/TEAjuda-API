@@ -117,13 +117,7 @@ const selectByIdUsuario = async function (id){
 //select do email do usuario para o login 
 const SelectLoginUsuario = async function (email){
     try {
-       
-        let result = await prisma.$queryRaw`SELECT * FROM tbl_usuario WHERE email = ${email}
-        `;
-
-        console.log(result)
-        console.log("erro no result")
-
+        let result = await prisma.$queryRaw`SELECT * FROM tbl_usuario WHERE email = ${email}`;
         return result[0] || null
     } catch (error) {   
         console.error("Erro no DAO ao buscar login:", error)

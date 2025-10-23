@@ -21,13 +21,14 @@
  * 
  *      npx prisma init                         Para inicializar o prisma no projeto 
  * 
- * Após esse comando você deverá configurar o .env e o schema.prisma, e rodar o comando: 
+
  * 
  *          npx prisma migrate dev  
  * ********************************************** */
 
 
 //import das bibliotecas para a api
+require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')

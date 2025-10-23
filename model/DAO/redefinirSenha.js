@@ -63,7 +63,6 @@ const selectByToken = async function(token){
 
 //update quando foi usado
 const updateStatusUsado = async function(id){
-
     try {
         let sql = `
         update tbl_recSenha set usado = true where id = ${id};
@@ -73,7 +72,6 @@ const updateStatusUsado = async function(id){
 
        if (result) {
         return true
-        
        } else {
          return false
        }
@@ -84,11 +82,15 @@ const updateStatusUsado = async function(id){
 
 const updateSenha = async function (id, novaSenha ) {
     try {
+        console.log('=== UPDATE SENHA ===')
+        console.log('ID do usuário:', id)
+        console.log('Hash da nova senha (primeiros 20 chars):', novaSenha ? novaSenha.substring(0, 20) + '...' : 'null')
 
-        let sql = ` update tbl_usuario set senha = '${novaSenha}'  where id = ${id}
-        `
+        let sql = `UPDATE tbl_usuario SET senha = '${novaSenha}' WHERE id = ${id}`
+        console.log('SQL:', sql)
 
         let result = await prisma.$executeRawUnsafe(sql)
+        console.log('Linhas afetadas:', result)
 
         if(result){
             return true
@@ -96,7 +98,8 @@ const updateSenha = async function (id, novaSenha ) {
             return false
         }
     } catch (error) {
-        console.log("error ao atualizar senha")
+        console.error("Erro ao atualizar senha:", error)
+        return false
     }
 }
 
