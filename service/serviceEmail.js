@@ -8,27 +8,6 @@ const enviarEmail = async (to, token) => {
             pass: process.env.EMAIL_PASS,
         },
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
     await transporter.sendMail({
         from: `"Suporte TEAjuda" <${process.env.EMAIL_USER}>`,
         to,

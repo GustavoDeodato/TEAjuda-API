@@ -34,6 +34,7 @@ const bodyParser = require('body-parser')
 
 const controllerUsuarios = require ('./controller/usuarios/ControllerUsuarios.js')
 const ControllerRedefinir = require('./controller/redefinirSenha/ControllerRedefinirSenha.js')
+import authroutes from './routes/authRoutes.js'
 
 
 //Cria um objeto para o body do tipo json 
@@ -130,83 +131,7 @@ app.post('/v1/teajuda/usuario/login', cors(), bodyParserJSON, async function(req
 })
 
 /////////////////////////////////////////////////// G M A I L ///////////////////////////////////////////////////////////////
-// require('dotenv').config()
-// const session = require('express-session')
-// const passport = require('passport')
-// const GoogleStrategy = require('passport-google-oauth20').Strategy
-
-
-// app.use(passport.initialize())
-// app.use(passport.session())
-
-// passport.serializeUser((user, done) => {
-//   done(null, user.id)
-// })
-
-// passport.deserializeUser(async (id, done) => {
-//   const user = await prisma.usuario.findUnique({ where: { id } })
-//   done(null, user)
-// })
-
-// // Config Google OAuth
-// passport.use(new GoogleStrategy({
-//   clientID: process.env.GOOGLE_CLIENT_ID,
-//   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//   callbackURL: process.env.GOOGLE_CALLBACK_URL
-// }, async (accessToken, refreshToken, profile, done) => {
-//   try {
-//     const email = profile.emails[0].value
-//     const nome = profile.displayName
-
-//     let usuario = await prisma.usuario.findUnique({
-//       where: { email }
-//     })
-
-//     // Se não existir, cria
-//     if (!usuario) {
-//       usuario = await prisma.usuario.create({
-//         data: { nome, email }
-//       })
-//     }
-
-//     return done(null, usuario)
-//   } catch (error) {
-//     return done(error, null)
-//   }
-// }))
-
-// // Rota inicial
-// app.get('/', (req, res) => {
-//   res.send('<a href="/auth/google">Entrar com Google</a>')
-// })
-
-// // Login Google
-// app.get('/auth/google',
-//   passport.authenticate('google', { scope: ['profile', 'email'] })
-// )
-
-// // Callback Google
-// app.get('/auth/google/callback',
-//   passport.authenticate('google', { failureRedirect: '/' }),
-//   (req, res) => {
-//     res.redirect('/perfil')
-//   }
-// )
-
-// // Perfil do usuário
-// app.get('/perfil', async (req, res) => {
-//   if (!req.user) return res.redirect('/')
-//   res.send(`
-//     <h1>Bem-vindo, ${req.user.nome}</h1>
-//     <p>Email: ${req.user.email}</p>
-//     <br><a href="/logout">Sair</a>
-//   `)
-// })
-
-// // Logout
-// app.get('/logout', (req, res) => {
-//   req.logout(() => res.redirect('/'))
-// })
+app.use('/v1/google', authroutes)
 
 
 
